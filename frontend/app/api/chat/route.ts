@@ -6,30 +6,28 @@ function writeToolCall(
   controller: ReadableStreamDefaultController,
   toolCallId: string,
   toolName: string,
-  args: unknown,
+  args: unknown
 ) {
   const payload = JSON.stringify({ toolCallId, toolName, args });
   controller.enqueue(new TextEncoder().encode(`9:${payload}\n`));
 }
 
 export async function POST(req: Request) {
-  const payload = (await req
-    .json()
-    .catch(() => ({ messages: [] }))) as {
+  const payload = (await req.json().catch(() => ({ messages: [] }))) as {
     messages: Array<{
       content?: string;
       parts?: Array<{ type: string; text?: string }>;
     }>;
   };
   const { messages } = payload;
-  const lastMessage = messages.at(-1);
-  const lastUserMessage =
-    lastMessage?.content ??
-    (lastMessage?.parts
-      ?.filter((part) => part.type === "text")
-      .map((part) => part.text ?? "")
-      .join("") ??
-      "");
+  // const lastMessage = messages.at(-1);
+  // const lastUserMessage =
+  //   lastMessage?.content ??
+  //   lastMessage?.parts
+  //     ?.filter((part) => part.type === "text")
+  //     .map((part) => part.text ?? "")
+  //     .join("") ??
+  //   "";
 
   const { cookies } = await import("next/headers");
   const sessionCookie = (await cookies()).get("mock_session")?.value;
@@ -42,8 +40,8 @@ export async function POST(req: Request) {
         "Content-Type": "application/json",
         ...(sessionCookie ? { Cookie: `mock_session=${sessionCookie}` } : {}),
       },
-      body: JSON.stringify({ messages: messages }),
-    },
+      body: JSON.stringify({ messages }),
+    }
   );
 
   if (!upstreamRes.ok || !upstreamRes.body) {
@@ -80,7 +78,7 @@ export async function POST(req: Request) {
                 controller,
                 tool.toolCallId ?? crypto.randomUUID(),
                 tool.toolName,
-                tool.args,
+                tool.args
               );
             } catch {
               // Skip malformed tool line

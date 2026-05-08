@@ -65,23 +65,26 @@ export default function RegisterPage() {
     <main className="min-h-screen bg-white text-blueprint">
       <div className="mx-auto flex min-h-screen w-full max-w-xl items-center justify-center px-6 py-8 fade-in">
         <form
-          onSubmit={onSubmit}
           className="w-full space-y-5 border border-dashed border-[var(--blueprint-border)] p-6"
+          onSubmit={onSubmit}
         >
           <h1 className="text-xl text-blueprint">Register Access</h1>
 
           <div className="space-y-2">
-            <label htmlFor="username" className="font-mono text-xs tracking-widest text-blueprint/60">
+            <label
+              className="font-mono text-xs tracking-widest text-blueprint/60"
+              htmlFor="username"
+            >
               USERNAME
             </label>
             <input
+              autoComplete="username"
+              className="w-full border border-dashed border-[var(--blueprint-border)] px-3 py-2 font-mono text-sm outline-none focus:border-blueprint"
               id="username"
               name="username"
-              type="text"
-              autoComplete="username"
-              value={username}
               onChange={(event) => setUsername(event.target.value)}
-              className="w-full border border-dashed border-[var(--blueprint-border)] px-3 py-2 font-mono text-sm outline-none focus:border-blueprint"
+              type="text"
+              value={username}
             />
             <p className="mt-1 font-mono text-xs text-blueprint/40">
               UID will be generated automatically - format: YY-Name-NNNN
@@ -91,17 +94,20 @@ export default function RegisterPage() {
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="password" className="font-mono text-xs tracking-widest text-blueprint/60">
+            <label
+              className="font-mono text-xs tracking-widest text-blueprint/60"
+              htmlFor="password"
+            >
               PASSWORD
             </label>
             <input
+              autoComplete="new-password"
+              className="w-full border border-dashed border-[var(--blueprint-border)] px-3 py-2 font-mono text-sm outline-none focus:border-blueprint"
               id="password"
               name="password"
-              type="password"
-              autoComplete="new-password"
-              value={password}
               onChange={(event) => setPassword(event.target.value)}
-              className="w-full border border-dashed border-[var(--blueprint-border)] px-3 py-2 font-mono text-sm outline-none focus:border-blueprint"
+              type="password"
+              value={password}
             />
           </div>
 
@@ -110,7 +116,9 @@ export default function RegisterPage() {
               <p className="mb-1 text-xs uppercase tracking-widest text-blueprint/50">
                 Your Employee UID
               </p>
-              <p className="text-sm font-bold tracking-wider text-blueprint">{generatedUID}</p>
+              <p className="text-sm font-bold tracking-wider text-blueprint">
+                {generatedUID}
+              </p>
               <p className="mt-2 text-xs text-blueprint/40">
                 Save this. You will need it to identify yourself internally.
               </p>
@@ -124,16 +132,16 @@ export default function RegisterPage() {
           ) : null}
 
           <button
-            type="submit"
-            disabled={isSubmitting}
             className="w-full border border-dashed border-blueprint px-4 py-2 font-mono text-xs tracking-widest text-blueprint transition-colors hover:bg-blueprint hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
+            disabled={isSubmitting}
+            type="submit"
           >
             {isSubmitting ? "REGISTERING..." : "REGISTER"}
           </button>
 
           <Link
-            href="/login"
             className="block font-mono text-xs text-blueprint/60 transition-colors hover:text-blueprint"
+            href="/login"
           >
             Already have access? Login →
           </Link>

@@ -12,8 +12,8 @@ type ActiveChart = {
 
 interface Props {
   chart: ActiveChart | null;
-  open: boolean;
   onToggle: () => void;
+  open: boolean;
 }
 
 export default function InsightsPanel({ chart, open, onToggle }: Props) {
@@ -28,10 +28,10 @@ export default function InsightsPanel({ chart, open, onToggle }: Props) {
           Insights Draft
         </span>
         <button
-          type="button"
-          onClick={onToggle}
           aria-label="Close insights panel"
           className="rounded-none border border-transparent px-2 py-1 font-mono text-xs text-blueprint/50 transition-colors hover:border-blueprint/30 hover:text-blueprint"
+          onClick={onToggle}
+          type="button"
         >
           ✕ CLOSE
         </button>
@@ -49,7 +49,9 @@ export default function InsightsPanel({ chart, open, onToggle }: Props) {
             <p className="text-center font-mono text-xs leading-relaxed text-blueprint/30">
               NO CHART DATA
               <br />
-              <span className="text-blueprint/20">awaiting render_chart signal</span>
+              <span className="text-blueprint/20">
+                awaiting render_chart signal
+              </span>
             </p>
           </div>
         )}

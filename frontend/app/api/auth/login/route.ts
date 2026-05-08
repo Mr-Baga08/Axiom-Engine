@@ -3,22 +3,20 @@ import { NextResponse } from "next/server";
 import { mockUsers } from "@/lib/auth/mock-store";
 
 export async function POST(req: Request) {
-  const payload = (await req
-    .json()
-    .catch(() => ({}))) as {
+  const payload = (await req.json().catch(() => ({}))) as {
     username?: string;
     password?: string;
   };
   const { username, password } = payload;
 
   const user = mockUsers.find(
-    (u) => u.username === username && u.passwordHash === password,
+    (u) => u.username === username && u.passwordHash === password
   );
 
   if (!user) {
     return NextResponse.json(
       { error: "Invalid username or password." },
-      { status: 401 },
+      { status: 401 }
     );
   }
 
@@ -29,7 +27,7 @@ export async function POST(req: Request) {
       httpOnly: true,
       path: "/",
       maxAge: 60 * 60 * 8,
-    },
+    }
   );
 
   return NextResponse.json({ uid: user.uid, username: user.username });

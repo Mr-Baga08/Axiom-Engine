@@ -1,8 +1,11 @@
 "use client";
 
 import { useMemo } from "react";
-// @ts-expect-error - react-roughviz has no TS declarations
-import { Area as RoughArea, Bar as RoughBar, Line as RoughLine } from "react-roughviz";
+import {
+  Area as RoughArea,
+  Bar as RoughBar,
+  Line as RoughLine,
+} from "react-roughviz";
 
 type Datum = {
   entity: string;

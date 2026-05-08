@@ -5,6 +5,11 @@
     "ultracite/biome/next",
     "ultracite/biome/react"
   ],
+  "vcs": {
+    "clientKind": "git",
+    "useIgnoreFile": true,
+    "root": ".."
+  },
   "formatter": {
     "indentStyle": "space",
     "indentWidth": 2

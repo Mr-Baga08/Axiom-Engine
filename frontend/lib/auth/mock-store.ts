@@ -1,10 +1,10 @@
 export type EmployeeUID = string;
 
 export interface MockUser {
-  uid: EmployeeUID;
-  username: string;
   passwordHash: string;
   registeredAt: string;
+  uid: EmployeeUID;
+  username: string;
 }
 
 declare global {
@@ -14,8 +14,10 @@ declare global {
   var __mockEmployeeCounter: number | undefined;
 }
 
-export const mockUsers: MockUser[] =
-  globalThis.__mockUsers ?? (globalThis.__mockUsers = []);
+if (!globalThis.__mockUsers) {
+  globalThis.__mockUsers = [];
+}
+export const mockUsers: MockUser[] = globalThis.__mockUsers;
 
 export function getCounter(): number {
   if (globalThis.__mockEmployeeCounter == null) {

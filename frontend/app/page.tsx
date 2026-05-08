@@ -19,7 +19,7 @@ export default function Page() {
   const { session, logout } = useSession();
 
   const { messages, status, sendMessage } = useChat({
-    id: 'dumb-lens-session',
+    id: "dumb-lens-session",
     onToolCall: ({ toolCall }) => {
       if (toolCall.toolName === "render_chart") {
         setActiveChart(toolCall.input as ActiveChart);
@@ -35,7 +35,7 @@ export default function Page() {
     if (!input.trim()) {
       return;
     }
-    void sendMessage({ text: input });
+    sendMessage({ text: input });
     setInput("");
   };
 
@@ -51,9 +51,9 @@ export default function Page() {
           <span className="flex items-center gap-4">
             <span>{session.uid}</span>
             <button
-              type="button"
-              onClick={logout}
               className="transition-colors hover:text-blueprint"
+              onClick={logout}
+              type="button"
             >
               LOGOUT
             </button>
@@ -63,18 +63,18 @@ export default function Page() {
 
       <section className="flex min-h-0 flex-1">
         <ChatPanel
-          messages={messages}
-          input={input}
-          isLoading={isLoading}
           handleInputChange={handleInputChange}
           handleSubmit={handleSubmit}
-          onOpenInsights={() => setInsightsOpen(true)}
           hasChart={activeChart !== null}
+          input={input}
+          isLoading={isLoading}
+          messages={messages}
+          onOpenInsights={() => setInsightsOpen(true)}
         />
         <InsightsPanel
           chart={activeChart}
-          open={insightsOpen}
           onToggle={() => setInsightsOpen((value) => !value)}
+          open={insightsOpen}
         />
       </section>
     </main>
