@@ -1,0 +1,41 @@
+# --- Python Backend ---
+__pycache__/
+backend-python/*.py[cod]
+backend-python/*$py.class
+backend-python/venv/
+backend-python/env/
+backend-python/.venv/
+backend-python/.env.python
+backend-python/.pytest_cache/
+
+# --- Go Backend ---
+/backend-go/bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# --- Docker & Data ---
+data/csv/*.csv
+data/pdfs/*.pdf
+!data/csv/.gitkeep
+!data/pdfs/.gitkeep
+
+# --- Node.js Frontend ---
+/frontend/node_modules/
+/frontend/.next/
+/frontend/.env.local
+/frontend/.env.development.local
+/frontend/.env.test.local
+/frontend/.env.production.local
+/frontend/.DS_Store 
+
+# --- Misc ---
+*.log
+.DS_Store
+.idea/
+.vscode/
+.env
