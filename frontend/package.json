@@ -72,6 +72,7 @@
     "react-dom": "19.0.1",
     "react-markdown": "^10.1.0",
     "react-roughviz": "^0.1.10",
+    "recharts": "^2.15.4",
     "redis": "^5.0.0",
     "resumable-stream": "^2.2.10",
     "server-only": "^0.0.1",

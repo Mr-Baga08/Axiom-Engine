@@ -1,0 +1,217 @@
+# Production Docker Compose — AI-Insights
+# All services enforce: no-new-privileges, read-only rootfs, drop all capabilities.
+# Exception: vault requires IPC_LOCK.
+# Run: make prod-up
+# Init secrets first: make secrets-init (then edit infra/secrets/*.txt)
+
+services:
+
+  # ── PostgreSQL ────────────────────────────────────────────────────────────
+  postgres:
+    image: pgvector/pgvector:pg16
+    restart: unless-stopped
+    security_opt: [no-new-privileges:true]
+    read_only: true
+    cap_drop: [ALL]
+    user: "1000:1000"
+    environment:
+      POSTGRES_USER_FILE:     /run/secrets/db_user
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_pass
+      POSTGRES_DB:            insights
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./infra/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    tmpfs:
+      - /tmp
+      - /run/postgresql
+    secrets:
+      - db_user
+      - db_pass
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app -d insights"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Redis ─────────────────────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    security_opt: [no-new-privileges:true]
+    read_only: true
+    cap_drop: [ALL]
+    user: "1000:1000"
+    command:
+      - redis-server
+      - "--save"
+      - ""
+      - "--appendonly"
+      - "no"
+      - "--requirepass_file"
+      - "/run/secrets/redis_pass"
+    tmpfs:
+      - /data
+    secrets:
+      - redis_pass
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # ── Vault ─────────────────────────────────────────────────────────────────
+  vault:
+    image: hashicorp/vault:1.16
+    restart: unless-stopped
+    security_opt: [no-new-privileges:true]
+    read_only: true
+    cap_drop: [ALL]
+    cap_add: [IPC_LOCK]
+    user: "1000:1000"
+    command: server -config=/vault/config/config.hcl
+    volumes:
+      - ./infra/vault/config.hcl:/vault/config/config.hcl:ro
+      - vault_data:/vault/data
+    tmpfs:
+      - /tmp
+    healthcheck:
+      test: ["CMD", "vault", "status"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+  # ── Python FastAPI ────────────────────────────────────────────────────────
+  api:
+    build:
+      context: ./backend-python/api
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    security_opt: [no-new-privileges:true]
+    read_only: true
+    cap_drop: [ALL]
+    user: "1000:1000"
+    environment:
+      VAULT_ADDR:        http://vault:8200
+      VAULT_TOKEN_FILE:  /run/secrets/vault_token
+      DB_URL_FILE:       /run/secrets/db_url
+      LOG_FORMAT:        json
+      LOG_LEVEL:         INFO
+      USE_GRAPHRAG:      "false"
+      # LLM provider: "anthropic" (default) or "gemini"
+      LLM_PROVIDER:      ${LLM_PROVIDER:-anthropic}
+      GEMINI_AGENT_MODEL: ${GEMINI_AGENT_MODEL:-gemini-2.5-flash}
+      # API keys — set in host environment or via Docker secret (below)
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      GOOGLE_API_KEY:    ${GOOGLE_API_KEY:-}
+      PYTHONWARNINGS:    "ignore::FutureWarning"
+    volumes:
+      - ./data:/data:ro
+      - graphrag_index:/data/graphrag:ro
+    tmpfs:
+      - /tmp
+    secrets:
+      - vault_token
+      - db_url
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      vault:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+  # ── Go SSE Gateway ────────────────────────────────────────────────────────
+  go-sse:
+    build: ./backend-go/sse
+    restart: unless-stopped
+    security_opt: [no-new-privileges:true]
+    read_only: true
+    cap_drop: [ALL]
+    user: "1000:1000"
+    environment:
+      AI_SERVICE_URL: http://api:8000
+      REDIS_URL_FILE: /run/secrets/redis_url
+      RATE_LIMIT_RPM: "10"
+      CB_THRESHOLD:   "3"
+      PORT:           "8080"
+    ports:
+      - "8080:8080"
+    tmpfs:
+      - /tmp
+    secrets:
+      - redis_url
+    depends_on:
+      api:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # ── Go Ingestion Worker (run-once job) ────────────────────────────────────
+  go-ingestion:
+    build: ./backend-go/ingestion
+    security_opt: [no-new-privileges:true]
+    read_only: true
+    cap_drop: [ALL]
+    user: "1000:1000"
+    command: ["/ingestion"]
+    volumes:
+      - ./data/csv:/data/csv:ro
+    secrets:
+      - db_url
+    environment:
+      CSV_DIR:    /data/csv
+      WORKERS:    "8"
+      BATCH_SIZE: "1000"
+    restart: "no"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # ── Frontend (Next.js) ────────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: http://go-sse:8080
+    restart: unless-stopped
+    security_opt: [no-new-privileges:true]
+    read_only: true
+    cap_drop: [ALL]
+    user: "1000:1000"
+    ports:
+      - "3000:80"
+    tmpfs:
+      - /tmp
+      - /var/cache/nginx
+      - /var/run
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:80 || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+# ── Secrets ───────────────────────────────────────────────────────────────
+secrets:
+  db_user:     { file: ./infra/secrets/db_user.txt }
+  db_pass:     { file: ./infra/secrets/db_pass.txt }
+  db_url:      { file: ./infra/secrets/db_url.txt }
+  redis_pass:  { file: ./infra/secrets/redis_pass.txt }
+  redis_url:   { file: ./infra/secrets/redis_url.txt }
+  vault_token: { file: ./infra/secrets/vault_token.txt }
+
+# ── Volumes ───────────────────────────────────────────────────────────────
+volumes:
+  pg_data:
+  vault_data:
+  graphrag_index:

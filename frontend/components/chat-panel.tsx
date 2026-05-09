@@ -1,7 +1,38 @@
 "use client";
 
 import type { UIMessage } from "@ai-sdk/react";
+import dynamic from "next/dynamic";
 import ReactMarkdown from "react-markdown";
+import ToolTrace from "@/components/ToolTrace";
+import type { ChartPayload, SSEToolCallEvent } from "@/types/app-types";
+
+const InsightsChart = dynamic(() => import("@/components/InsightsChart"), {
+  ssr: false,
+});
+
+// Runtime shape of tool-call parts (AI SDK v3 types don't surface this directly)
+interface ToolCallPart {
+  type: "tool-call";
+  toolCallId: string;
+  toolName: string;
+  input: unknown;
+}
+
+function tryParseChartPayload(input: unknown): ChartPayload | null {
+  if (!input || typeof input !== "object") return null;
+  const obj = input as Record<string, unknown>;
+  // Backend sends "type" (not "chartType") — verified in agent.py generate_chart
+  if (
+    typeof obj.type === "string" &&
+    ["bar", "line", "pie", "scatter"].includes(obj.type) &&
+    Array.isArray(obj.data) &&
+    typeof obj.xKey === "string" &&
+    Array.isArray(obj.yKeys)
+  ) {
+    return obj as unknown as ChartPayload;
+  }
+  return null;
+}
 
 interface Props {
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -34,6 +65,30 @@ export default function ChatPanel({
               )
               .map((p) => p.text)
               .join("") ?? "";
+
+          const toolCallParts: ToolCallPart[] =
+            m.role !== "user"
+              ? (m.parts ?? [])
+                  .filter((p) => p.type === "tool-call")
+                  .map((p) => p as unknown as ToolCallPart)
+              : [];
+
+          const toolEvents: SSEToolCallEvent[] = toolCallParts
+            .filter((p) => p.toolName !== "show_reasoning")
+            .map((p) => ({
+              id: p.toolCallId,
+              name: p.toolName,
+              args: p.input as Record<string, unknown>,
+              result_preview: "",
+              latency_ms: 0,
+            }));
+
+          const chartPart = toolCallParts.find(
+            (p) => p.toolName === "generate_chart"
+          );
+          const chartPayload = chartPart
+            ? tryParseChartPayload(chartPart.input)
+            : null;
 
           return (
             <div className="space-y-2" key={m.id}>
@@ -96,6 +151,15 @@ export default function ChatPanel({
                     </details>
                   );
                 })}
+
+              {m.role !== "user" ? (
+                <>
+                  <ToolTrace events={toolEvents} />
+                  {chartPayload ? (
+                    <InsightsChart payload={chartPayload} />
+                  ) : null}
+                </>
+              ) : null}
             </div>
           );
         })}

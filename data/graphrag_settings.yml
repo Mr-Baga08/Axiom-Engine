@@ -1,0 +1,26 @@
+# GraphRAG index and query configuration.
+# Run graphrag.index to build; graphrag.query to retrieve.
+# ANTHROPIC_API_BASE must point to an OpenAI-compatible endpoint.
+
+input:
+  type: file
+  file_type: pdf
+  base_dir: /data/pdfs
+
+output:
+  type: file
+  base_dir: /data/graphrag
+
+llm:
+  type: azure_openai_chat   # overridden by env at runtime; kept for schema compatibility
+  model: claude-sonnet-4-20250514
+  api_base: ${ANTHROPIC_API_BASE}
+
+embeddings:
+  llm:
+    type: openai_embedding
+    model: all-MiniLM-L6-v2
+
+chunks:
+  size: 512
+  overlap: 64

@@ -1,6 +1,8 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import QueryHistory from "@/components/QueryHistory";
+import type { HistoryItem } from "@/types/app-types";
 
 const RoughChart = dynamic(() => import("./rough-chart"), { ssr: false });
 
@@ -14,9 +16,19 @@ interface Props {
   chart: ActiveChart | null;
   onToggle: () => void;
   open: boolean;
+  history: HistoryItem[];
+  clearHistory: () => void;
+  onHistorySelect: (query: string) => void;
 }
 
-export default function InsightsPanel({ chart, open, onToggle }: Props) {
+export default function InsightsPanel({
+  chart,
+  open,
+  onToggle,
+  history,
+  clearHistory,
+  onHistorySelect,
+}: Props) {
   if (!open) {
     return null;
   }
@@ -37,24 +49,31 @@ export default function InsightsPanel({ chart, open, onToggle }: Props) {
         </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4">
-        {chart ? (
-          <RoughChart
-            chartType={chart.chart_type}
-            dataset={chart.dataset}
-            roughness={chart.roughness ?? 2}
-          />
-        ) : (
-          <div className="flex h-full items-center justify-center">
-            <p className="text-center font-mono text-xs leading-relaxed text-blueprint/30">
-              NO CHART DATA
-              <br />
-              <span className="text-blueprint/20">
-                awaiting render_chart signal
-              </span>
-            </p>
-          </div>
-        )}
+      <div className="flex flex-1 flex-col overflow-y-auto">
+        <div className="p-4">
+          {chart ? (
+            <RoughChart
+              chartType={chart.chart_type}
+              dataset={chart.dataset}
+              roughness={chart.roughness ?? 2}
+            />
+          ) : (
+            <div className="flex h-32 items-center justify-center">
+              <p className="text-center font-mono text-xs leading-relaxed text-blueprint/30">
+                NO CHART DATA
+                <br />
+                <span className="text-blueprint/20">
+                  awaiting render_chart signal
+                </span>
+              </p>
+            </div>
+          )}
+        </div>
+        <QueryHistory
+          clearHistory={clearHistory}
+          history={history}
+          onSelect={onHistorySelect}
+        />
       </div>
     </aside>
   );

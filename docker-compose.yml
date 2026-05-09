@@ -31,12 +31,20 @@ services:
     command: redis-server --save 60 1 --loglevel warning
 
   api-python:
-    image: python:3.11-slim
+    image: python:3.12-slim
     container_name: axiom-api-python
-    working_dir: /app
+    working_dir: /app/api
     volumes:
       - ./backend-python:/app
-    command: tail -f /dev/null 
+      - ./:/repo         
+    environment:
+      PYTHONPATH: "/repo:/app/api"
+      PYTHONWARNINGS: "ignore::FutureWarning"
+      DUCKDB_PATH: "/repo/data/duckdb/analytics.duckdb"
+      DATA_DIR: "/repo/data/csv"
+    command: sh -c "pip install --quiet fastapi uvicorn[standard] anthropic google-generativeai python-jose[cryptography] slowapi structlog bleach sqlglot pymupdf pandas duckdb httpx pydantic tiktoken langfuse presidio-analyzer presidio-anonymizer redis && uvicorn main:app --host 0.0.0.0 --port 8000"
+    ports:
+      - "8000:8000"
     env_file:
       - .env
     depends_on:
@@ -44,19 +52,28 @@ services:
         condition: service_healthy
       redis:
         condition: service_started
-
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/health')\""]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 60s
 
   api-go:
     image: golang:1.22-alpine
     container_name: axiom-api-go
-    working_dir: /app
+    working_dir: /app/sse
     volumes:
       - ./backend-go:/app
-    command: tail -f /dev/null
+    command: sh -c "go mod tidy && go run ."
+    ports:
+      - "8080:8080"
     env_file:
       - .env
+    environment:
+      AI_SERVICE_URL: "http://api-python:8000"
     depends_on:
-      postgres:
+      api-python:
         condition: service_healthy
       redis:
         condition: service_started
@@ -67,14 +84,17 @@ services:
     working_dir: /app
     volumes:
       - ./frontend:/app
-    command: tail -f /dev/null
+      - /app/node_modules    
+    command: sh -c "npm install --legacy-peer-deps --silent && npx next dev -p 3000"
+    ports:
+      - "3000:3000"
     env_file:
       - .env
+    environment:
+      BACKEND_URL: "http://api-python:8000"
     depends_on:
-      postgres:
+      api-python:
         condition: service_healthy
-      redis:
-        condition: service_started
 
 volumes:
   postgres_data:

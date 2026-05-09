@@ -7,6 +7,7 @@ backend-python/env/
 backend-python/.venv/
 backend-python/.env.python
 backend-python/.pytest_cache/
+axiom-engine/backend-python/api/auth/keys
 
 # --- Go Backend ---
 /backend-go/bin/
@@ -23,6 +24,9 @@ data/csv/*.csv
 data/pdfs/*.pdf
 !data/csv/.gitkeep
 !data/pdfs/.gitkeep
+data/pdfs/
+data/chroma/
+data/examples.json
 
 # --- Node.js Frontend ---
 /frontend/node_modules/
@@ -32,6 +36,9 @@ data/pdfs/*.pdf
 /frontend/.env.test.local
 /frontend/.env.production.local
 /frontend/.DS_Store 
+
+# --- Secrets (never commit) ---
+infra/secrets/*.txt
 
 # --- Misc ---
 *.log

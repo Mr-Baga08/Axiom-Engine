@@ -1,0 +1,31 @@
+# LiteLLM proxy config — routes Anthropic SDK calls to Gemini.
+#
+# The agent uses claude-sonnet-4-20250514 as the model name.
+# LiteLLM sees that name, looks it up here, and calls Gemini instead.
+# Zero Python changes needed other than pointing base_url at this proxy.
+#
+# Docs: https://docs.litellm.ai/docs/proxy/configs
+
+model_list:
+  # Primary alias: exact model name the agent already uses → Gemini Flash
+  - model_name: claude-sonnet-4-20250514
+    litellm_params:
+      model: gemini/gemini-1.5-flash
+      api_key: os.environ/GOOGLE_API_KEY
+
+  # Slower/heavier tasks (DIN-SQL schema linking) → Gemini Pro
+  - model_name: claude-opus-4-6
+    litellm_params:
+      model: gemini/gemini-1.5-pro
+      api_key: os.environ/GOOGLE_API_KEY
+
+  # Catchall: any model name not matched above also goes to Flash
+  - model_name: "*"
+    litellm_params:
+      model: gemini/gemini-1.5-flash
+      api_key: os.environ/GOOGLE_API_KEY
+
+litellm_settings:
+  # Pass tool-call responses back in Anthropic format so the SDK can parse them
+  drop_params: false
+  set_verbose: false

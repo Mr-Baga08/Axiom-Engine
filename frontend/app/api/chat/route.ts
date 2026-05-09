@@ -1,3 +1,13 @@
+// Converts the Python API's non-streaming JSON response into the Vercel AI
+// data-stream format consumed by @ai-sdk/react useChat.
+//
+// Verified contract (backend-python/api/main.py + agent.py):
+//   POST /api/chat  { message: string }   ← single string, not messages array
+//   → { answer: string, tool_trace: [{round, tool, input, output}], ... }
+//
+// Chart payload is in tool_trace[].output (JSON after Phase 6 fix):
+//   { type, title, data, xKey, yKeys }   ← "type" not "chartType"
+
 function writeText(controller: ReadableStreamDefaultController, text: string) {
   controller.enqueue(new TextEncoder().encode(`0:${JSON.stringify(text)}\n`));
 }
@@ -19,18 +29,23 @@ export async function POST(req: Request) {
       parts?: Array<{ type: string; text?: string }>;
     }>;
   };
-  const { messages } = payload;
-  // const lastMessage = messages.at(-1);
-  // const lastUserMessage =
-  //   lastMessage?.content ??
-  //   lastMessage?.parts
-  //     ?.filter((part) => part.type === "text")
-  //     .map((part) => part.text ?? "")
-  //     .join("") ??
-  //   "";
+
+  // Extract the last user message text from the AI SDK messages array
+  const lastMsg = payload.messages.at(-1);
+  const messageText =
+    lastMsg?.content ??
+    lastMsg?.parts
+      ?.filter((p) => p.type === "text")
+      .map((p) => p.text ?? "")
+      .join("") ??
+    "";
+
+  if (!messageText.trim()) {
+    return new Response("empty message", { status: 400 });
+  }
 
   const { cookies } = await import("next/headers");
-  const sessionCookie = (await cookies()).get("mock_session")?.value;
+  const apiToken = (await cookies()).get("api_token")?.value;
 
   const upstreamRes = await fetch(
     `${process.env.BACKEND_URL ?? "http://localhost:8000"}/api/chat`,
@@ -38,56 +53,56 @@ export async function POST(req: Request) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        ...(sessionCookie ? { Cookie: `mock_session=${sessionCookie}` } : {}),
+        ...(apiToken ? { Authorization: `Bearer ${apiToken}` } : {}),
       },
-      body: JSON.stringify({ messages }),
+      // Python ChatRequest expects { message: string }, not messages array
+      body: JSON.stringify({ message: messageText }),
     }
-  );
+  ).catch(() => null);
 
-  if (!upstreamRes.ok || !upstreamRes.body) {
+  if (!upstreamRes) {
     return new Response("Backend unavailable", { status: 502 });
   }
 
+  if (!upstreamRes.ok) {
+    const status = upstreamRes.status === 401 ? 401 : 502;
+    return new Response(`Backend error ${upstreamRes.status}`, { status });
+  }
+
+  const data = (await upstreamRes.json()) as {
+    answer: string;
+    tool_trace: Array<{
+      round: number;
+      tool: string;
+      input: Record<string, string>;
+      output: string;
+    }>;
+    total_tokens?: number;
+    cost_usd?: number;
+    trace_id?: string;
+  };
+
   const stream = new ReadableStream({
-    async start(controller) {
-      const reader = upstreamRes.body?.getReader();
-      const decoder = new TextDecoder();
+    start(controller) {
+      for (const entry of data.tool_trace ?? []) {
+        const id = crypto.randomUUID();
 
-      while (reader) {
-        const { done, value } = await reader.read();
-        if (done) {
-          break;
-        }
-
-        const raw = decoder.decode(value, { stream: true });
-        for (const line of raw.split("\n")) {
-          if (!line.trim()) {
-            continue;
-          }
-
-          if (line.startsWith("TEXT:")) {
-            writeText(controller, line.slice(5));
-          } else if (line.startsWith("TOOL:")) {
-            try {
-              const tool = JSON.parse(line.slice(5)) as {
-                toolCallId?: string;
-                toolName: string;
-                args: unknown;
-              };
-              writeToolCall(
-                controller,
-                tool.toolCallId ?? crypto.randomUUID(),
-                tool.toolName,
-                tool.args
-              );
-            } catch {
-              // Skip malformed tool line
-            }
-          } else {
-            writeText(controller, line);
+        // generate_chart: output is a JSON chart spec { type, title, data, xKey, yKeys }.
+        // Pass it directly as args so InsightsChart receives the correct shape.
+        let args: unknown = entry.input;
+        if (entry.tool === "generate_chart") {
+          try {
+            args = JSON.parse(entry.output);
+          } catch {
+            // output still in old str() repr format — pass raw input as fallback
+            args = entry.input;
           }
         }
+
+        writeToolCall(controller, id, entry.tool, args);
       }
+
+      writeText(controller, data.answer ?? "");
       controller.close();
     },
   });

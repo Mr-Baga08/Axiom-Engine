@@ -1,10 +1,11 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ChatPanel from "@/components/chat-panel";
 import InsightsPanel from "@/components/insights-panel";
 import { useSession } from "@/lib/auth/use-session";
+import { useQueryHistory } from "@/hooks/useQueryHistory";
 
 type ActiveChart = {
   chart_type: string;
@@ -17,6 +18,9 @@ export default function Page() {
   const [insightsOpen, setInsightsOpen] = useState(false);
   const [activeChart, setActiveChart] = useState<ActiveChart | null>(null);
   const { session, logout } = useSession();
+  const { history, addHistoryItem, clearHistory } = useQueryHistory();
+  const lastUserQueryRef = useRef("");
+  const prevStatusRef = useRef("");
 
   const { messages, status, sendMessage } = useChat({
     id: "dumb-lens-session",
@@ -28,6 +32,33 @@ export default function Page() {
     },
   });
 
+  // Record history entry when streaming completes
+  useEffect(() => {
+    if (prevStatusRef.current === "streaming" && status === "ready") {
+      const lastAssistant = [...messages]
+        .reverse()
+        .find((m) => m.role === "assistant");
+      if (lastAssistant && lastUserQueryRef.current) {
+        const toolsUsed = (lastAssistant.parts ?? [])
+          .filter((p) => p.type === "tool-call")
+          .map((p) => (p as { toolName: string }).toolName);
+        const answerText = (lastAssistant.parts ?? [])
+          .filter((p) => p.type === "text")
+          .map((p) => (p as { text: string }).text)
+          .join("");
+        addHistoryItem({
+          id: lastAssistant.id,
+          query: lastUserQueryRef.current,
+          answerPreview: answerText.slice(0, 100),
+          toolsUsed,
+          timestamp: Date.now(),
+        });
+        lastUserQueryRef.current = "";
+      }
+    }
+    prevStatusRef.current = status;
+  }, [status, messages, addHistoryItem]);
+
   const isLoading = status === "streaming" || status === "submitted";
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -35,6 +66,7 @@ export default function Page() {
     if (!input.trim()) {
       return;
     }
+    lastUserQueryRef.current = input;
     sendMessage({ text: input });
     setInput("");
   };
@@ -73,6 +105,9 @@ export default function Page() {
         />
         <InsightsPanel
           chart={activeChart}
+          clearHistory={clearHistory}
+          history={history}
+          onHistorySelect={setInput}
           onToggle={() => setInsightsOpen((value) => !value)}
           open={insightsOpen}
         />
