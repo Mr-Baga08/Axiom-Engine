@@ -60,9 +60,13 @@ function buildUIMessageStreamResponse(toolCalls: ToolEntry[], answer: string): R
         }
       });
 
-      // Emit the answer text
+      // text-start must precede text-delta so the SDK creates the text part;
+      // without it text-delta has nowhere to accumulate and the part is never
+      // added to messages[].parts, so the answer never renders.
       if (answer) {
+        writer.write({ type: "text-start", id: "answer" });
         writer.write({ type: "text-delta", id: "answer", delta: answer });
+        writer.write({ type: "text-end",   id: "answer" });
       }
 
       // Finish — commits the message into messages[]
