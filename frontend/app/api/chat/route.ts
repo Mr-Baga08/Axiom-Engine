@@ -1,116 +1,176 @@
-// Converts the Python API's non-streaming JSON response into the Vercel AI
-// data-stream format consumed by @ai-sdk/react useChat.
+// Next.js API route — bridges useChat() (ai@6 / @ai-sdk/react@3) to the backend.
 //
-// Verified contract (backend-python/api/main.py + agent.py):
-//   POST /api/chat  { message: string }   ← single string, not messages array
-//   → { answer: string, tool_trace: [{round, tool, input, output}], ... }
+// ai@6 uses the "UI Message Stream" protocol, NOT the old data stream format.
+// Correct SSE format: data: {"type":"text-delta","delta":"..."}\n\n
+// Correct headers:    x-vercel-ai-ui-message-stream: v1
 //
-// Chart payload is in tool_trace[].output (JSON after Phase 6 fix):
-//   { type, title, data, xKey, yKeys }   ← "type" not "chartType"
+// Primary path  : Go SSE gateway (:8080/stream) → Python /internal/query
+// Fallback path : Python /api/chat (JSON response)
 
-function writeText(controller: ReadableStreamDefaultController, text: string) {
-  controller.enqueue(new TextEncoder().encode(`0:${JSON.stringify(text)}\n`));
+import {
+  createUIMessageStream,
+  createUIMessageStreamResponse,
+} from "ai";
+
+const BACKEND_URL = process.env.BACKEND_URL ?? "http://localhost:8000";
+const GO_SSE_URL  = process.env.GO_SSE_URL  ?? "http://localhost:8080";
+
+// ── Helpers ────────────────────────────────────────────────────────────────
+
+async function getApiToken(): Promise<string | undefined> {
+  const { cookies } = await import("next/headers");
+  return (await cookies()).get("api_token")?.value;
 }
 
-function writeToolCall(
-  controller: ReadableStreamDefaultController,
-  toolCallId: string,
-  toolName: string,
-  args: unknown
-) {
-  const payload = JSON.stringify({ toolCallId, toolName, args });
-  controller.enqueue(new TextEncoder().encode(`9:${payload}\n`));
-}
-
-export async function POST(req: Request) {
-  const payload = (await req.json().catch(() => ({ messages: [] }))) as {
-    messages: Array<{
-      content?: string;
-      parts?: Array<{ type: string; text?: string }>;
-    }>;
-  };
-
-  // Extract the last user message text from the AI SDK messages array
-  const lastMsg = payload.messages.at(-1);
-  const messageText =
-    lastMsg?.content ??
-    lastMsg?.parts
+function extractMessage(payload: {
+  messages?: Array<{
+    content?: string;
+    parts?: Array<{ type: string; text?: string }>;
+  }>;
+}): string {
+  const last = payload.messages?.at(-1);
+  return (
+    last?.content ??
+    last?.parts
       ?.filter((p) => p.type === "text")
       .map((p) => p.text ?? "")
       .join("") ??
-    "";
+    ""
+  );
+}
 
-  if (!messageText.trim()) {
-    return new Response("empty message", { status: 400 });
-  }
+// ── Shared response builder ────────────────────────────────────────────────
 
-  const { cookies } = await import("next/headers");
-  const apiToken = (await cookies()).get("api_token")?.value;
+interface ToolEntry { tool: string; args: unknown; output?: unknown }
 
-  const upstreamRes = await fetch(
-    `${process.env.BACKEND_URL ?? "http://localhost:8000"}/api/chat`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        ...(apiToken ? { Authorization: `Bearer ${apiToken}` } : {}),
-      },
-      // Python ChatRequest expects { message: string }, not messages array
-      body: JSON.stringify({ message: messageText }),
-    }
-  ).catch(() => null);
-
-  if (!upstreamRes) {
-    return new Response("Backend unavailable", { status: 502 });
-  }
-
-  if (!upstreamRes.ok) {
-    const status = upstreamRes.status === 401 ? 401 : 502;
-    return new Response(`Backend error ${upstreamRes.status}`, { status });
-  }
-
-  const data = (await upstreamRes.json()) as {
-    answer: string;
-    tool_trace: Array<{
-      round: number;
-      tool: string;
-      input: Record<string, string>;
-      output: string;
-    }>;
-    total_tokens?: number;
-    cost_usd?: number;
-    trace_id?: string;
-  };
-
-  const stream = new ReadableStream({
-    start(controller) {
-      for (const entry of data.tool_trace ?? []) {
-        const id = crypto.randomUUID();
-
-        // generate_chart: output is a JSON chart spec { type, title, data, xKey, yKeys }.
-        // Pass it directly as args so InsightsChart receives the correct shape.
-        let args: unknown = entry.input;
-        if (entry.tool === "generate_chart") {
-          try {
-            args = JSON.parse(entry.output);
-          } catch {
-            // output still in old str() repr format — pass raw input as fallback
-            args = entry.input;
-          }
+function buildUIMessageStreamResponse(toolCalls: ToolEntry[], answer: string): Response {
+  const stream = createUIMessageStream({
+    execute: ({ writer }) => {
+      // Emit each tool call with its input and output
+      // Exact field requirements validated against ai@6 at build time:
+      //   tool-input-available : { toolCallId, toolName, input }
+      //   tool-output-available: { toolCallId, output }          (no toolName)
+      //   text-delta           : { id, delta }
+      //   finish-step          : {}
+      toolCalls.forEach((tc, i) => {
+        const tcId = `tc-${i}-${tc.tool}`;
+        writer.write({ type: "tool-input-available", toolCallId: tcId, toolName: tc.tool, input: tc.args ?? {} });
+        if (tc.output !== undefined) {
+          writer.write({ type: "tool-output-available", toolCallId: tcId, output: tc.output });
         }
+      });
 
-        writeToolCall(controller, id, entry.tool, args);
+      // Emit the answer text
+      if (answer) {
+        writer.write({ type: "text-delta", id: "answer", delta: answer });
       }
 
-      writeText(controller, data.answer ?? "");
-      controller.close();
+      // Finish — commits the message into messages[]
+      writer.write({ type: "finish-step" });
     },
   });
 
-  return new Response(stream, {
+  return createUIMessageStreamResponse({ stream });
+}
+
+// ── Primary: Go SSE gateway ────────────────────────────────────────────────
+
+async function callViaGo(message: string, apiToken: string | undefined): Promise<Response> {
+  const goRes = await fetch(`${GO_SSE_URL}/stream`, {
+    method: "POST",
     headers: {
-      "Content-Type": "text/plain; charset=utf-8",
-      "X-Vercel-AI-Data-Stream": "v1",
+      "Content-Type": "application/json",
+      ...(apiToken ? { Authorization: `Bearer ${apiToken}` } : {}),
     },
+    body: JSON.stringify({ message }),
   });
+
+  if (!goRes.ok) throw new Error(`Go gateway ${goRes.status}`);
+
+  const raw = await goRes.text();
+
+  const toolCalls: ToolEntry[] = [];
+  let answer = "";
+
+  for (const line of raw.split("\n")) {
+    if (!line.startsWith("data: ")) continue;
+    const payload = line.slice(6).trim();
+    if (!payload || payload === "{}" || payload === "[DONE]") continue;
+
+    try {
+      const evt = JSON.parse(payload) as Record<string, unknown>;
+
+      if (evt.type === "tool_call") {
+        toolCalls.push({ tool: evt.tool as string, args: evt.args });
+      } else if (evt.type === "token") {
+        answer += (evt.content as string) ?? "";
+      } else if (evt.type === "done") {
+        answer = (evt.answer as string) ?? answer;
+        const trace = evt.tool_trace as Array<{ tool: string; input: unknown; output: string }> | undefined;
+        if (trace?.length) {
+          toolCalls.length = 0;
+          for (const t of trace) {
+            let output: unknown = t.output;
+            try { output = JSON.parse(t.output); } catch { /* keep string */ }
+            toolCalls.push({ tool: t.tool, args: t.input, output });
+          }
+        }
+      }
+    } catch {
+      continue;
+    }
+  }
+
+  return buildUIMessageStreamResponse(toolCalls, answer);
+}
+
+// ── Fallback: Python JSON endpoint ─────────────────────────────────────────
+
+async function callViaPython(message: string, apiToken: string | undefined): Promise<Response> {
+  const res = await fetch(`${BACKEND_URL}/api/chat`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...(apiToken ? { Authorization: `Bearer ${apiToken}` } : {}),
+    },
+    body: JSON.stringify({ message }),
+  });
+
+  if (!res.ok) return new Response(`Backend error ${res.status}`, { status: res.status === 401 ? 401 : 502 });
+
+  const data = (await res.json()) as {
+    answer: string;
+    tool_trace: Array<{ tool: string; input: unknown; output: string }>;
+  };
+
+  const toolCalls: ToolEntry[] = (data.tool_trace ?? []).map((t) => {
+    let output: unknown = t.output;
+    try { output = JSON.parse(t.output); } catch { /* keep string */ }
+    return { tool: t.tool, args: t.input, output };
+  });
+
+  return buildUIMessageStreamResponse(toolCalls, data.answer ?? "");
+}
+
+// ── Handler ────────────────────────────────────────────────────────────────
+
+export async function POST(req: Request) {
+  const payload = (await req.json().catch(() => ({ messages: [] }))) as {
+    messages: Array<{ content?: string; parts?: Array<{ type: string; text?: string }> }>;
+  };
+
+  const messageText = extractMessage(payload);
+  if (!messageText.trim()) return new Response("empty message", { status: 400 });
+
+  const apiToken = await getApiToken();
+
+  try {
+    return await callViaGo(messageText, apiToken);
+  } catch {
+    try {
+      return await callViaPython(messageText, apiToken);
+    } catch {
+      return new Response("All backends unavailable", { status: 502 });
+    }
+  }
 }

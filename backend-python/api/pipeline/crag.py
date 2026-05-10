@@ -75,7 +75,7 @@ def eval_llm(prompt: str, temperature: float = 0.0) -> str:
     during retrieval — Gemini Flash is ~50x cheaper per token.
     temperature=0 for deterministic, reproducible scoring.
     """
-    from ..observability.gemini_eval import gemini_generate
+    from observability.gemini_eval import gemini_generate
     return gemini_generate(prompt, temperature=temperature, max_tokens=8)
 
 
@@ -137,24 +137,27 @@ def _retrieve_and_score(
 
     Returns all chunks with relevance ≥ threshold.
     """
+    rag = get_rag()
+    if rag is None:
+        logger.warning("lightrag unavailable; returning empty chunk list")
+        return []
+
     from lightrag import QueryParam
 
-    rag = get_rag()
-    acl_filter = _build_acl_filter(user_role)
-
-    # LightRAG retrieval — hybrid mode uses both vector and graph
+    # LightRAG 1.4+ removed metadata_filter; ACL is enforced post-retrieval below
     raw_results = rag.query(
         question,
-        param=QueryParam(
-            mode="hybrid",
-            top_k=top_k,
-            metadata_filter=acl_filter,
-        ),
+        param=QueryParam(mode="hybrid", top_k=top_k),
     )
+    # raw_results is a string (LightRAG 1.4 returns a generated answer, not chunks).
+    # Wrap it as a single synthetic chunk so downstream CRAG scoring still works.
+    if isinstance(raw_results, str) and raw_results.strip():
+        raw_results = [{"text": raw_results, "metadata": {"source": "lightrag", "page": 0}, "distance": 0.0}]
+    elif not isinstance(raw_results, list):
+        raw_results = []
 
     scored: list[ScoredChunk] = []
     for result in raw_results:
-        # result is expected to be a dict with 'text', 'metadata', 'distance'
         chunk_text = result.get("text", "")
         meta = result.get("metadata", {})
 
@@ -218,7 +221,7 @@ def crag_retrieve(
         sources = _build_sources(pass1_chunks)
         # Record relevance at retrieval time (faithfulness recorded later in agent)
         try:
-            from ..observability.rag_eval import record_relevance
+            from observability.rag_eval import record_relevance
             record_relevance(
                 query=question,
                 chunks=[c.text for c in pass1_chunks],
@@ -253,7 +256,7 @@ def crag_retrieve(
 
     # Record relevance for decomposed path
     try:
-        from ..observability.rag_eval import record_relevance
+        from observability.rag_eval import record_relevance
         record_relevance(
             query=question,
             chunks=[c.text for c in final_chunks],

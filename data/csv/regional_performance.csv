@@ -1,0 +1,321 @@
+region_id,movie_id,title,city,country,month,views,revenue_usd,engagement_score,avg_watch_time_mins
+1,1,Stellar Run,Mumbai,India,2025-01,1000,6100,73.6,69.5
+2,2,Dark Orbit,Mumbai,India,2025-01,1033,4278,71.8,55.9
+3,3,Iron Horizon,Mumbai,India,2025-01,5248,2291,84.6,82.1
+4,4,Last Kingdom,Mumbai,India,2025-01,1000,2639,81.5,48.4
+5,5,The Still Season,Mumbai,India,2025-01,1000,1680,78.0,68.2
+6,6,Laughing Stock,Mumbai,India,2025-01,3815,233,83.6,81.6
+7,7,Date Night Chaos,Mumbai,India,2025-01,1000,221,79.6,53.5
+8,8,Family Fumbles,Mumbai,India,2025-01,1000,126,74.9,88.0
+9,9,Velocity Protocol,Mumbai,India,2025-01,3643,2399,71.4,63.4
+10,10,Neon Requiem,Mumbai,India,2025-01,1000,1943,70.5,71.5
+11,1,Stellar Run,London,UK,2025-01,5787,4719,71.7,67.4
+12,2,Dark Orbit,London,UK,2025-01,1667,4719,73.5,62.8
+13,3,Iron Horizon,London,UK,2025-01,4142,3542,73.0,87.7
+14,4,Last Kingdom,London,UK,2025-01,2860,1507,79.8,74.0
+15,5,The Still Season,London,UK,2025-01,2765,1260,82.4,59.5
+16,6,Laughing Stock,London,UK,2025-01,1000,271,68.9,70.5
+17,7,Date Night Chaos,London,UK,2025-01,3704,123,68.7,49.2
+18,8,Family Fumbles,London,UK,2025-01,1000,210,77.3,71.1
+19,9,Velocity Protocol,London,UK,2025-01,1000,3649,68.5,70.3
+20,10,Neon Requiem,London,UK,2025-01,4495,1780,79.5,84.7
+21,1,Stellar Run,New York,USA,2025-01,1000,5031,70.6,72.7
+22,2,Dark Orbit,New York,USA,2025-01,1000,3234,74.1,67.3
+23,3,Iron Horizon,New York,USA,2025-01,1000,4357,68.2,81.4
+24,4,Last Kingdom,New York,USA,2025-01,3723,1583,76.2,70.6
+25,5,The Still Season,New York,USA,2025-01,3094,1349,68.7,59.0
+26,6,Laughing Stock,New York,USA,2025-01,2890,244,64.2,63.9
+27,7,Date Night Chaos,New York,USA,2025-01,4673,213,76.2,94.3
+28,8,Family Fumbles,New York,USA,2025-01,1000,137,76.3,73.8
+29,9,Velocity Protocol,New York,USA,2025-01,2684,3545,73.2,90.3
+30,10,Neon Requiem,New York,USA,2025-01,4830,1777,72.5,79.5
+31,1,Stellar Run,São Paulo,Brazil,2025-01,4789,4167,65.3,56.4
+32,2,Dark Orbit,São Paulo,Brazil,2025-01,1126,2835,71.0,80.2
+33,3,Iron Horizon,São Paulo,Brazil,2025-01,4160,3436,63.4,59.4
+34,4,Last Kingdom,São Paulo,Brazil,2025-01,3800,2806,63.1,59.9
+35,5,The Still Season,São Paulo,Brazil,2025-01,2743,1660,70.9,66.9
+36,6,Laughing Stock,São Paulo,Brazil,2025-01,3075,250,70.5,80.5
+37,7,Date Night Chaos,São Paulo,Brazil,2025-01,3521,216,65.1,87.1
+38,8,Family Fumbles,São Paulo,Brazil,2025-01,2245,134,59.3,68.1
+39,9,Velocity Protocol,São Paulo,Brazil,2025-01,1000,4193,67.2,60.0
+40,10,Neon Requiem,São Paulo,Brazil,2025-01,2717,2541,66.9,68.1
+41,1,Stellar Run,Tokyo,Japan,2025-01,4780,6329,67.3,93.3
+42,2,Dark Orbit,Tokyo,Japan,2025-01,1000,7072,68.2,55.3
+43,3,Iron Horizon,Tokyo,Japan,2025-01,4162,5019,69.2,94.1
+44,4,Last Kingdom,Tokyo,Japan,2025-01,1000,1883,58.8,55.5
+45,5,The Still Season,Tokyo,Japan,2025-01,4001,1060,67.3,49.1
+46,6,Laughing Stock,Tokyo,Japan,2025-01,3091,282,70.9,49.0
+47,7,Date Night Chaos,Tokyo,Japan,2025-01,1000,313,61.1,46.1
+48,8,Family Fumbles,Tokyo,Japan,2025-01,4413,196,65.9,53.3
+49,9,Velocity Protocol,Tokyo,Japan,2025-01,1000,2476,63.1,52.4
+50,10,Neon Requiem,Tokyo,Japan,2025-01,4955,1961,69.9,86.2
+51,1,Stellar Run,Lagos,Nigeria,2025-01,1000,6274,62.4,71.9
+52,2,Dark Orbit,Lagos,Nigeria,2025-01,1000,4181,63.8,78.4
+53,3,Iron Horizon,Lagos,Nigeria,2025-01,1000,3704,63.1,51.1
+54,4,Last Kingdom,Lagos,Nigeria,2025-01,1000,1612,64.7,92.9
+55,5,The Still Season,Lagos,Nigeria,2025-01,2989,1249,65.6,77.3
+56,6,Laughing Stock,Lagos,Nigeria,2025-01,2026,172,55.2,48.0
+57,7,Date Night Chaos,Lagos,Nigeria,2025-01,1000,253,65.3,80.9
+58,8,Family Fumbles,Lagos,Nigeria,2025-01,1000,102,58.1,80.7
+59,9,Velocity Protocol,Lagos,Nigeria,2025-01,1066,3646,54.5,84.8
+60,10,Neon Requiem,Lagos,Nigeria,2025-01,1900,1583,56.4,67.0
+61,1,Stellar Run,Berlin,Germany,2025-01,5585,4651,56.5,57.3
+62,2,Dark Orbit,Berlin,Germany,2025-01,1000,5034,62.7,76.3
+63,3,Iron Horizon,Berlin,Germany,2025-01,2656,2955,65.1,76.6
+64,4,Last Kingdom,Berlin,Germany,2025-01,1000,2144,60.8,88.0
+65,5,The Still Season,Berlin,Germany,2025-01,3235,1699,55.0,62.9
+66,6,Laughing Stock,Berlin,Germany,2025-01,1271,271,53.3,64.6
+67,7,Date Night Chaos,Berlin,Germany,2025-01,1000,274,52.3,90.6
+68,8,Family Fumbles,Berlin,Germany,2025-01,1000,182,54.2,72.2
+69,9,Velocity Protocol,Berlin,Germany,2025-01,1701,3100,62.2,62.2
+70,10,Neon Requiem,Berlin,Germany,2025-01,1000,1592,54.1,57.7
+71,1,Stellar Run,Sydney,Australia,2025-01,2442,3311,59.2,89.7
+72,2,Dark Orbit,Sydney,Australia,2025-01,1095,5616,59.1,55.2
+73,3,Iron Horizon,Sydney,Australia,2025-01,1000,3713,60.8,58.3
+74,4,Last Kingdom,Sydney,Australia,2025-01,1000,2254,62.7,73.0
+75,5,The Still Season,Sydney,Australia,2025-01,1000,707,56.4,52.1
+76,6,Laughing Stock,Sydney,Australia,2025-01,3380,311,55.5,58.2
+77,7,Date Night Chaos,Sydney,Australia,2025-01,1000,178,53.5,74.0
+78,8,Family Fumbles,Sydney,Australia,2025-01,1000,170,60.4,73.8
+79,9,Velocity Protocol,Sydney,Australia,2025-01,1000,2883,56.5,88.0
+80,10,Neon Requiem,Sydney,Australia,2025-01,1000,2264,57.9,53.7
+81,1,Stellar Run,Mumbai,India,2025-02,4260,5805,85.2,58.5
+82,2,Dark Orbit,Mumbai,India,2025-02,1000,5339,87.1,56.9
+83,3,Iron Horizon,Mumbai,India,2025-02,3134,3535,75.4,69.5
+84,4,Last Kingdom,Mumbai,India,2025-02,1000,2346,85.7,66.2
+85,5,The Still Season,Mumbai,India,2025-02,1000,1684,79.6,82.9
+86,6,Laughing Stock,Mumbai,India,2025-02,1000,260,84.5,92.4
+87,7,Date Night Chaos,Mumbai,India,2025-02,1000,215,83.3,55.3
+88,8,Family Fumbles,Mumbai,India,2025-02,1000,191,81.3,56.1
+89,9,Velocity Protocol,Mumbai,India,2025-02,3231,2840,76.8,86.5
+90,10,Neon Requiem,Mumbai,India,2025-02,5152,1087,82.6,90.7
+91,1,Stellar Run,London,UK,2025-02,4518,8732,71.4,88.7
+92,2,Dark Orbit,London,UK,2025-02,1000,5712,68.6,62.4
+93,3,Iron Horizon,London,UK,2025-02,1000,3277,82.2,87.4
+94,4,Last Kingdom,London,UK,2025-02,1000,2833,69.4,81.2
+95,5,The Still Season,London,UK,2025-02,1000,1098,73.4,59.0
+96,6,Laughing Stock,London,UK,2025-02,3135,217,77.6,86.9
+97,7,Date Night Chaos,London,UK,2025-02,1000,150,75.2,94.9
+98,8,Family Fumbles,London,UK,2025-02,1000,94,74.9,69.1
+99,9,Velocity Protocol,London,UK,2025-02,1000,2848,67.0,58.9
+100,10,Neon Requiem,London,UK,2025-02,4525,2450,65.8,82.2
+101,1,Stellar Run,New York,USA,2025-02,5548,6979,77.2,54.2
+102,2,Dark Orbit,New York,USA,2025-02,1000,5340,79.3,54.3
+103,3,Iron Horizon,New York,USA,2025-02,1000,2262,76.6,50.0
+104,4,Last Kingdom,New York,USA,2025-02,1000,1828,73.1,64.1
+105,5,The Still Season,New York,USA,2025-02,1000,968,74.2,45.6
+106,6,Laughing Stock,New York,USA,2025-02,1000,198,70.2,91.5
+107,7,Date Night Chaos,New York,USA,2025-02,1000,274,63.2,56.8
+108,8,Family Fumbles,New York,USA,2025-02,1000,138,69.6,63.0
+109,9,Velocity Protocol,New York,USA,2025-02,1000,2274,71.8,68.2
+110,10,Neon Requiem,New York,USA,2025-02,1000,2105,63.2,51.8
+111,1,Stellar Run,São Paulo,Brazil,2025-02,1000,5184,65.7,68.1
+112,2,Dark Orbit,São Paulo,Brazil,2025-02,1000,5658,58.5,53.6
+113,3,Iron Horizon,São Paulo,Brazil,2025-02,1698,3125,60.3,82.2
+114,4,Last Kingdom,São Paulo,Brazil,2025-02,1722,2171,58.3,54.3
+115,5,The Still Season,São Paulo,Brazil,2025-02,1000,1260,69.7,80.5
+116,6,Laughing Stock,São Paulo,Brazil,2025-02,1000,305,63.4,50.5
+117,7,Date Night Chaos,São Paulo,Brazil,2025-02,1000,166,69.5,45.3
+118,8,Family Fumbles,São Paulo,Brazil,2025-02,1000,168,60.9,52.2
+119,9,Velocity Protocol,São Paulo,Brazil,2025-02,1000,2345,61.7,52.2
+120,10,Neon Requiem,São Paulo,Brazil,2025-02,1000,1734,57.4,90.6
+121,1,Stellar Run,Tokyo,Japan,2025-02,1000,5384,57.3,60.3
+122,2,Dark Orbit,Tokyo,Japan,2025-02,3652,7061,68.0,63.8
+123,3,Iron Horizon,Tokyo,Japan,2025-02,2331,3102,66.2,62.7
+124,4,Last Kingdom,Tokyo,Japan,2025-02,2970,1626,69.9,77.6
+125,5,The Still Season,Tokyo,Japan,2025-02,4355,1038,60.6,93.5
+126,6,Laughing Stock,Tokyo,Japan,2025-02,1000,225,70.3,62.5
+127,7,Date Night Chaos,Tokyo,Japan,2025-02,1000,197,58.1,50.5
+128,8,Family Fumbles,Tokyo,Japan,2025-02,1000,155,64.1,66.5
+129,9,Velocity Protocol,Tokyo,Japan,2025-02,1000,4732,71.0,85.1
+130,10,Neon Requiem,Tokyo,Japan,2025-02,4481,2310,59.9,88.9
+131,1,Stellar Run,Lagos,Nigeria,2025-02,1000,6094,63.1,64.0
+132,2,Dark Orbit,Lagos,Nigeria,2025-02,4177,3162,53.6,67.8
+133,3,Iron Horizon,Lagos,Nigeria,2025-02,2620,3416,64.2,72.9
+134,4,Last Kingdom,Lagos,Nigeria,2025-02,4633,1222,61.5,59.6
+135,5,The Still Season,Lagos,Nigeria,2025-02,2417,1454,55.3,47.5
+136,6,Laughing Stock,Lagos,Nigeria,2025-02,3711,354,63.8,83.4
+137,7,Date Night Chaos,Lagos,Nigeria,2025-02,4999,325,56.3,76.3
+138,8,Family Fumbles,Lagos,Nigeria,2025-02,1000,157,64.7,58.5
+139,9,Velocity Protocol,Lagos,Nigeria,2025-02,1000,3316,59.9,50.9
+140,10,Neon Requiem,Lagos,Nigeria,2025-02,1000,1791,61.0,54.4
+141,1,Stellar Run,Berlin,Germany,2025-02,1000,8550,51.8,55.0
+142,2,Dark Orbit,Berlin,Germany,2025-02,1000,6690,61.1,63.0
+143,3,Iron Horizon,Berlin,Germany,2025-02,1000,2425,63.8,46.0
+144,4,Last Kingdom,Berlin,Germany,2025-02,1000,2616,56.9,94.7
+145,5,The Still Season,Berlin,Germany,2025-02,1000,943,59.9,71.1
+146,6,Laughing Stock,Berlin,Germany,2025-02,1000,234,59.5,51.0
+147,7,Date Night Chaos,Berlin,Germany,2025-02,1000,223,52.0,82.6
+148,8,Family Fumbles,Berlin,Germany,2025-02,1000,181,63.0,55.1
+149,9,Velocity Protocol,Berlin,Germany,2025-02,4230,4264,63.1,73.9
+150,10,Neon Requiem,Berlin,Germany,2025-02,1000,1821,61.5,72.1
+151,1,Stellar Run,Sydney,Australia,2025-02,1000,8403,53.9,88.3
+152,2,Dark Orbit,Sydney,Australia,2025-02,1000,4643,56.3,47.0
+153,3,Iron Horizon,Sydney,Australia,2025-02,5097,2879,57.8,79.2
+154,4,Last Kingdom,Sydney,Australia,2025-02,1000,2173,51.5,57.2
+155,5,The Still Season,Sydney,Australia,2025-02,3783,1670,62.2,60.9
+156,6,Laughing Stock,Sydney,Australia,2025-02,1096,327,57.3,61.5
+157,7,Date Night Chaos,Sydney,Australia,2025-02,1000,127,57.5,45.9
+158,8,Family Fumbles,Sydney,Australia,2025-02,1000,119,60.6,55.2
+159,9,Velocity Protocol,Sydney,Australia,2025-02,2338,2785,53.6,61.1
+160,10,Neon Requiem,Sydney,Australia,2025-02,1000,2152,58.0,89.5
+161,1,Stellar Run,Mumbai,India,2025-03,3025,4023,76.8,47.7
+162,2,Dark Orbit,Mumbai,India,2025-03,1000,4388,71.8,80.3
+163,3,Iron Horizon,Mumbai,India,2025-03,3912,3095,71.0,51.9
+164,4,Last Kingdom,Mumbai,India,2025-03,1000,2419,77.6,52.5
+165,5,The Still Season,Mumbai,India,2025-03,3957,1530,71.9,89.4
+166,6,Laughing Stock,Mumbai,India,2025-03,1000,261,82.0,84.5
+167,7,Date Night Chaos,Mumbai,India,2025-03,1772,166,87.2,92.6
+168,8,Family Fumbles,Mumbai,India,2025-03,1000,90,87.7,49.4
+169,9,Velocity Protocol,Mumbai,India,2025-03,4737,4665,87.6,72.6
+170,10,Neon Requiem,Mumbai,India,2025-03,2138,2302,79.4,76.4
+171,1,Stellar Run,London,UK,2025-03,1710,7041,82.3,59.3
+172,2,Dark Orbit,London,UK,2025-03,1000,4254,72.3,75.1
+173,3,Iron Horizon,London,UK,2025-03,2193,2306,69.9,49.3
+174,4,Last Kingdom,London,UK,2025-03,2860,1706,74.4,49.5
+175,5,The Still Season,London,UK,2025-03,1000,2176,81.1,51.4
+176,6,Laughing Stock,London,UK,2025-03,2046,224,81.4,49.5
+177,7,Date Night Chaos,London,UK,2025-03,3745,169,81.1,45.6
+178,8,Family Fumbles,London,UK,2025-03,1000,145,72.9,85.7
+179,9,Velocity Protocol,London,UK,2025-03,1000,3678,81.2,81.3
+180,10,Neon Requiem,London,UK,2025-03,1000,3125,70.6,93.9
+181,1,Stellar Run,New York,USA,2025-03,1000,5198,66.4,93.3
+182,2,Dark Orbit,New York,USA,2025-03,1000,2657,64.2,70.0
+183,3,Iron Horizon,New York,USA,2025-03,1000,5615,73.2,60.5
+184,4,Last Kingdom,New York,USA,2025-03,1134,2727,67.0,66.1
+185,5,The Still Season,New York,USA,2025-03,1000,1097,69.6,60.9
+186,6,Laughing Stock,New York,USA,2025-03,2549,229,74.1,54.2
+187,7,Date Night Chaos,New York,USA,2025-03,1453,244,62.8,80.2
+188,8,Family Fumbles,New York,USA,2025-03,1578,182,68.6,87.8
+189,9,Velocity Protocol,New York,USA,2025-03,2703,3720,64.0,65.4
+190,10,Neon Requiem,New York,USA,2025-03,1000,2413,71.2,59.7
+191,1,Stellar Run,São Paulo,Brazil,2025-03,1000,6029,58.4,77.0
+192,2,Dark Orbit,São Paulo,Brazil,2025-03,1000,5338,57.7,60.2
+193,3,Iron Horizon,São Paulo,Brazil,2025-03,1000,3076,72.3,60.7
+194,4,Last Kingdom,São Paulo,Brazil,2025-03,1000,1707,60.3,66.0
+195,5,The Still Season,São Paulo,Brazil,2025-03,1000,2006,62.9,52.5
+196,6,Laughing Stock,São Paulo,Brazil,2025-03,1000,262,66.9,82.6
+197,7,Date Night Chaos,São Paulo,Brazil,2025-03,1000,118,61.1,65.0
+198,8,Family Fumbles,São Paulo,Brazil,2025-03,1000,196,69.4,50.1
+199,9,Velocity Protocol,São Paulo,Brazil,2025-03,1000,3931,64.7,49.0
+200,10,Neon Requiem,São Paulo,Brazil,2025-03,2277,1347,60.9,56.3
+201,1,Stellar Run,Tokyo,Japan,2025-03,4188,7909,67.9,70.1
+202,2,Dark Orbit,Tokyo,Japan,2025-03,4083,3455,57.1,85.1
+203,3,Iron Horizon,Tokyo,Japan,2025-03,2243,3350,71.0,83.7
+204,4,Last Kingdom,Tokyo,Japan,2025-03,1000,2643,57.6,54.1
+205,5,The Still Season,Tokyo,Japan,2025-03,1000,919,69.2,82.5
+206,6,Laughing Stock,Tokyo,Japan,2025-03,1000,254,67.0,50.9
+207,7,Date Night Chaos,Tokyo,Japan,2025-03,3678,185,60.8,86.2
+208,8,Family Fumbles,Tokyo,Japan,2025-03,3297,120,58.2,94.4
+209,9,Velocity Protocol,Tokyo,Japan,2025-03,1000,2174,57.0,67.3
+210,10,Neon Requiem,Tokyo,Japan,2025-03,1000,1749,65.4,85.4
+211,1,Stellar Run,Lagos,Nigeria,2025-03,1000,5486,53.7,68.7
+212,2,Dark Orbit,Lagos,Nigeria,2025-03,3723,4426,55.0,74.5
+213,3,Iron Horizon,Lagos,Nigeria,2025-03,2381,2729,62.8,82.5
+214,4,Last Kingdom,Lagos,Nigeria,2025-03,1000,3107,64.3,92.0
+215,5,The Still Season,Lagos,Nigeria,2025-03,1000,1735,62.3,57.9
+216,6,Laughing Stock,Lagos,Nigeria,2025-03,2688,334,57.5,61.4
+217,7,Date Night Chaos,Lagos,Nigeria,2025-03,1000,139,53.6,92.9
+218,8,Family Fumbles,Lagos,Nigeria,2025-03,1000,161,58.3,46.1
+219,9,Velocity Protocol,Lagos,Nigeria,2025-03,2917,4277,61.4,45.2
+220,10,Neon Requiem,Lagos,Nigeria,2025-03,1000,1817,60.1,68.4
+221,1,Stellar Run,Berlin,Germany,2025-03,1000,7522,53.1,70.6
+222,2,Dark Orbit,Berlin,Germany,2025-03,1000,4321,58.2,55.1
+223,3,Iron Horizon,Berlin,Germany,2025-03,1919,3440,62.1,69.5
+224,4,Last Kingdom,Berlin,Germany,2025-03,1000,2119,54.4,47.0
+225,5,The Still Season,Berlin,Germany,2025-03,1000,2089,59.4,45.3
+226,6,Laughing Stock,Berlin,Germany,2025-03,4043,286,59.2,62.6
+227,7,Date Night Chaos,Berlin,Germany,2025-03,1000,196,58.6,57.8
+228,8,Family Fumbles,Berlin,Germany,2025-03,1000,155,54.4,64.8
+229,9,Velocity Protocol,Berlin,Germany,2025-03,1000,2649,65.0,46.9
+230,10,Neon Requiem,Berlin,Germany,2025-03,1655,2615,60.0,87.3
+231,1,Stellar Run,Sydney,Australia,2025-03,1000,4741,58.7,67.1
+232,2,Dark Orbit,Sydney,Australia,2025-03,1000,4507,50.8,87.5
+233,3,Iron Horizon,Sydney,Australia,2025-03,1000,3536,54.7,47.7
+234,4,Last Kingdom,Sydney,Australia,2025-03,1000,2096,55.3,64.4
+235,5,The Still Season,Sydney,Australia,2025-03,1000,825,62.2,47.3
+236,6,Laughing Stock,Sydney,Australia,2025-03,3614,385,60.7,89.6
+237,7,Date Night Chaos,Sydney,Australia,2025-03,1000,174,61.2,88.3
+238,8,Family Fumbles,Sydney,Australia,2025-03,1000,162,53.7,56.0
+239,9,Velocity Protocol,Sydney,Australia,2025-03,2350,2664,62.0,85.5
+240,10,Neon Requiem,Sydney,Australia,2025-03,1000,1687,54.1,50.0
+241,1,Stellar Run,Mumbai,India,2025-04,7025,25479,90.1,79.9
+242,2,Dark Orbit,Mumbai,India,2025-04,1000,4990,94.6,88.4
+243,3,Iron Horizon,Mumbai,India,2025-04,1000,3996,91.6,61.3
+244,4,Last Kingdom,Mumbai,India,2025-04,1000,4237,93.9,66.0
+245,5,The Still Season,Mumbai,India,2025-04,4906,2432,93.7,87.8
+246,6,Laughing Stock,Mumbai,India,2025-04,2782,230,94.4,61.8
+247,7,Date Night Chaos,Mumbai,India,2025-04,3991,348,93.2,90.3
+248,8,Family Fumbles,Mumbai,India,2025-04,1000,285,91.9,51.7
+249,9,Velocity Protocol,Mumbai,India,2025-04,1000,4223,92.6,58.0
+250,10,Neon Requiem,Mumbai,India,2025-04,1000,2816,90.1,85.6
+251,1,Stellar Run,London,UK,2025-04,1000,10535,87.4,59.6
+252,2,Dark Orbit,London,UK,2025-04,1911,6471,89.0,66.1
+253,3,Iron Horizon,London,UK,2025-04,2815,2850,88.3,68.0
+254,4,Last Kingdom,London,UK,2025-04,3451,1646,88.6,63.1
+255,5,The Still Season,London,UK,2025-04,1000,1606,87.2,81.1
+256,6,Laughing Stock,London,UK,2025-04,3008,202,84.8,93.9
+257,7,Date Night Chaos,London,UK,2025-04,1000,249,87.8,87.0
+258,8,Family Fumbles,London,UK,2025-04,1000,175,83.0,78.6
+259,9,Velocity Protocol,London,UK,2025-04,1000,3745,87.7,64.7
+260,10,Neon Requiem,London,UK,2025-04,1000,2519,88.1,54.3
+261,1,Stellar Run,New York,USA,2025-04,3733,11857,83.4,51.8
+262,2,Dark Orbit,New York,USA,2025-04,1905,5243,84.2,52.2
+263,3,Iron Horizon,New York,USA,2025-04,1280,3935,85.6,72.4
+264,4,Last Kingdom,New York,USA,2025-04,3215,2585,81.2,51.9
+265,5,The Still Season,New York,USA,2025-04,3482,1772,84.1,75.4
+266,6,Laughing Stock,New York,USA,2025-04,1000,299,86.0,70.9
+267,7,Date Night Chaos,New York,USA,2025-04,1000,203,86.3,79.7
+268,8,Family Fumbles,New York,USA,2025-04,1000,149,83.5,62.3
+269,9,Velocity Protocol,New York,USA,2025-04,1000,2501,79.9,73.9
+270,10,Neon Requiem,New York,USA,2025-04,1000,2395,83.0,67.5
+271,1,Stellar Run,São Paulo,Brazil,2025-04,2630,14504,76.5,47.9
+272,2,Dark Orbit,São Paulo,Brazil,2025-04,5491,5916,74.5,70.0
+273,3,Iron Horizon,São Paulo,Brazil,2025-04,1000,3704,76.1,88.1
+274,4,Last Kingdom,São Paulo,Brazil,2025-04,3925,1617,78.3,87.3
+275,5,The Still Season,São Paulo,Brazil,2025-04,1000,1333,78.3,55.3
+276,6,Laughing Stock,São Paulo,Brazil,2025-04,1000,161,73.6,77.2
+277,7,Date Night Chaos,São Paulo,Brazil,2025-04,2646,242,76.8,77.6
+278,8,Family Fumbles,São Paulo,Brazil,2025-04,4964,119,76.7,69.6
+279,9,Velocity Protocol,São Paulo,Brazil,2025-04,4404,3023,77.8,59.4
+280,10,Neon Requiem,São Paulo,Brazil,2025-04,1985,2478,76.8,56.6
+281,1,Stellar Run,Tokyo,Japan,2025-04,6243,7993,78.3,74.2
+282,2,Dark Orbit,Tokyo,Japan,2025-04,1000,4031,73.4,54.0
+283,3,Iron Horizon,Tokyo,Japan,2025-04,4569,2573,77.3,94.8
+284,4,Last Kingdom,Tokyo,Japan,2025-04,1000,2979,74.2,58.4
+285,5,The Still Season,Tokyo,Japan,2025-04,1000,1588,77.1,89.2
+286,6,Laughing Stock,Tokyo,Japan,2025-04,1000,363,75.7,49.0
+287,7,Date Night Chaos,Tokyo,Japan,2025-04,1000,282,71.5,92.1
+288,8,Family Fumbles,Tokyo,Japan,2025-04,1000,112,76.0,65.7
+289,9,Velocity Protocol,Tokyo,Japan,2025-04,4978,2784,74.8,50.7
+290,10,Neon Requiem,Tokyo,Japan,2025-04,1000,2424,76.4,84.1
+291,1,Stellar Run,Lagos,Nigeria,2025-04,5670,9829,71.4,73.1
+292,2,Dark Orbit,Lagos,Nigeria,2025-04,1172,4687,73.8,52.8
+293,3,Iron Horizon,Lagos,Nigeria,2025-04,4556,3161,70.8,79.9
+294,4,Last Kingdom,Lagos,Nigeria,2025-04,5195,1555,67.6,68.1
+295,5,The Still Season,Lagos,Nigeria,2025-04,1000,894,71.4,73.6
+296,6,Laughing Stock,Lagos,Nigeria,2025-04,1000,288,70.0,47.4
+297,7,Date Night Chaos,Lagos,Nigeria,2025-04,1000,312,69.3,80.9
+298,8,Family Fumbles,Lagos,Nigeria,2025-04,1000,179,70.5,67.7
+299,9,Velocity Protocol,Lagos,Nigeria,2025-04,1000,2953,70.1,58.2
+300,10,Neon Requiem,Lagos,Nigeria,2025-04,4956,2092,69.8,67.6
+301,1,Stellar Run,Berlin,Germany,2025-04,1000,8502,70.3,69.8
+302,2,Dark Orbit,Berlin,Germany,2025-04,2455,5457,67.2,46.1
+303,3,Iron Horizon,Berlin,Germany,2025-04,1000,3015,72.1,87.1
+304,4,Last Kingdom,Berlin,Germany,2025-04,1000,1440,69.1,83.6
+305,5,The Still Season,Berlin,Germany,2025-04,1000,1821,69.7,59.0
+306,6,Laughing Stock,Berlin,Germany,2025-04,1000,287,64.2,53.7
+307,7,Date Night Chaos,Berlin,Germany,2025-04,1000,113,70.4,53.4
+308,8,Family Fumbles,Berlin,Germany,2025-04,1000,112,68.5,63.7
+309,9,Velocity Protocol,Berlin,Germany,2025-04,1000,2828,67.0,89.2
+310,10,Neon Requiem,Berlin,Germany,2025-04,1000,1476,72.3,84.8
+311,1,Stellar Run,Sydney,Australia,2025-04,6600,13575,70.3,72.7
+312,2,Dark Orbit,Sydney,Australia,2025-04,1000,5400,67.3,82.8
+313,3,Iron Horizon,Sydney,Australia,2025-04,1000,3105,67.7,53.2
+314,4,Last Kingdom,Sydney,Australia,2025-04,1000,2533,65.3,46.3
+315,5,The Still Season,Sydney,Australia,2025-04,1000,1107,66.0,86.6
+316,6,Laughing Stock,Sydney,Australia,2025-04,1000,233,58.2,89.0
+317,7,Date Night Chaos,Sydney,Australia,2025-04,1459,138,67.1,88.7
+318,8,Family Fumbles,Sydney,Australia,2025-04,1000,207,63.2,50.9
+319,9,Velocity Protocol,Sydney,Australia,2025-04,3335,2871,65.2,74.4
+320,10,Neon Requiem,Sydney,Australia,2025-04,1000,2193,66.5,64.2

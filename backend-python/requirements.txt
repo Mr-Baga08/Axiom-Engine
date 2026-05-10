@@ -1,0 +1,48 @@
+# axiom-engine Python API dependencies
+# No version pins — pip resolves compatible versions.
+# chromadb is pulled in by lightrag-hku as a transitive dep — do not list separately.
+
+# ── Web framework ─────────────────────────────────────────────────────────────
+fastapi
+uvicorn[standard]
+python-multipart
+slowapi
+starlette
+
+# ── LLM providers ─────────────────────────────────────────────────────────────
+anthropic
+google-generativeai
+
+# ── Auth / security ───────────────────────────────────────────────────────────
+python-jose[cryptography]
+bleach
+presidio-analyzer
+presidio-anonymizer
+
+# ── Data / SQL ────────────────────────────────────────────────────────────────
+pandas
+duckdb
+sqlglot
+asyncpg
+psycopg2-binary
+
+# ── Vector / RAG ──────────────────────────────────────────────────────────────
+# lightrag-hku brings in fastapi + chromadb at versions it is compatible with
+lightrag-hku
+sentence-transformers
+
+# ── Document processing ───────────────────────────────────────────────────────
+pymupdf
+tiktoken
+
+# ── Observability ─────────────────────────────────────────────────────────────
+langfuse
+structlog
+
+# ── DSPy ──────────────────────────────────────────────────────────────────────
+dspy-ai
+
+# ── HTTP / utilities ──────────────────────────────────────────────────────────
+httpx
+redis
+pydantic

@@ -210,14 +210,20 @@ class GeminiClient(LLMClient):
         self._last_tool_calls: dict[str, ToolCallBlock] = {}
 
     def reset(self, system: str, first_user_message: str) -> None:
+        # Force the first generation to call a tool (mode=ANY).
+        # After tool results arrive, add_tool_results() switches to AUTO so
+        # the model can give a final text answer on subsequent rounds.
+        self._system = system
         model = self._genai.GenerativeModel(
             model_name=self.model_name,
             system_instruction=system,
             tools=self._gemini_tools,
+            tool_config={"function_calling_config": {"mode": "ANY"}},
         )
         self._chat = model.start_chat(history=[])
         self._pending_send = first_user_message
         self._last_tool_calls = {}
+        self._forced_first_call = True
 
     def complete(self) -> LLMResponse:
         import re
@@ -293,8 +299,17 @@ class GeminiClient(LLMClient):
                 continue
 
             try:
-                content = json.loads(r["content"])
+                parsed = json.loads(r["content"])
             except (json.JSONDecodeError, TypeError):
+                parsed = None
+
+            # FunctionResponse.response must be a dict (proto Struct).
+            # SQL results are lists of row dicts — wrap them.
+            if isinstance(parsed, list):
+                content = {"rows": parsed}
+            elif isinstance(parsed, dict):
+                content = parsed
+            else:
                 content = {"result": str(r["content"])}
 
             parts.append(
@@ -308,6 +323,18 @@ class GeminiClient(LLMClient):
 
         if parts:
             self._pending_send = parts
+
+        # After the first tool call is answered, switch to AUTO mode so the
+        # model can either call more tools or give a final text answer.
+        if getattr(self, "_forced_first_call", False):
+            self._forced_first_call = False
+            new_model = self._genai.GenerativeModel(
+                model_name=self.model_name,
+                system_instruction=self._system,
+                tools=self._gemini_tools,
+                tool_config={"function_calling_config": {"mode": "AUTO"}},
+            )
+            self._chat = new_model.start_chat(history=self._chat.history)
 
     def simple_complete(self, prompt: str) -> str:
         model = self._genai.GenerativeModel(model_name=self.model_name)

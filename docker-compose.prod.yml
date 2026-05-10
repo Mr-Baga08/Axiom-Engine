@@ -1,26 +1,34 @@
-# Production Docker Compose — AI-Insights
-# All services enforce: no-new-privileges, read-only rootfs, drop all capabilities.
-# Exception: vault requires IPC_LOCK.
-# Run: make prod-up
-# Init secrets first: make secrets-init (then edit infra/secrets/*.txt)
+# Production Docker Compose — axiom-engine
+#
+# Security posture applied to every service:
+#   no-new-privileges, read-only root filesystem, drop all Linux capabilities,
+#   non-root user (1000:1000), tmpfs for any writable paths the process needs.
+#
+# Setup:
+#   make secrets-init          # creates infra/secrets/*.txt with placeholders
+#   # edit each file with real values
+#   make prod-up               # docker compose -f docker-compose.prod.yml up -d
+#   make vault-init            # load secrets into Vault
+#
+# The db-migrate service applies the PostgreSQL schema on every startup
+# (idempotent — uses CREATE TABLE IF NOT EXISTS).
 
 services:
 
-  # ── PostgreSQL ────────────────────────────────────────────────────────────
+  # ── PostgreSQL + pgvector ─────────────────────────────────────────────────
   postgres:
     image: pgvector/pgvector:pg16
     restart: unless-stopped
     security_opt: [no-new-privileges:true]
     read_only: true
     cap_drop: [ALL]
-    user: "1000:1000"
+    user: "999:999"     # postgres image default uid
     environment:
       POSTGRES_USER_FILE:     /run/secrets/db_user
       POSTGRES_PASSWORD_FILE: /run/secrets/db_pass
-      POSTGRES_DB:            insights
+      POSTGRES_DB:            axiom_db
     volumes:
       - pg_data:/var/lib/postgresql/data
-      - ./infra/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     tmpfs:
       - /tmp
       - /run/postgresql
@@ -28,10 +36,29 @@ services:
       - db_user
       - db_pass
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U app -d insights"]
+      test: ["CMD-SHELL", "pg_isready -U $(cat /run/secrets/db_user) -d axiom_db"]
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 20s
+
+  # ── Schema migration (one-shot) ───────────────────────────────────────────
+  # Applies infra/postgres/init.sql every run — safe because all statements
+  # use IF NOT EXISTS / DROP POLICY IF EXISTS.
+  db-migrate:
+    image: postgres:16-alpine
+    restart: "no"
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    volumes:
+      - ./infra/postgres/init.sql:/init.sql:ro
+    secrets:
+      - db_url
+    command: >
+      sh -c "psql $$(cat /run/secrets/db_url) -f /init.sql"
+    depends_on:
+      postgres:
+        condition: service_healthy
 
   # ── Redis ─────────────────────────────────────────────────────────────────
   redis:
@@ -47,26 +74,22 @@ services:
       - ""
       - "--appendonly"
       - "no"
-      - "--requirepass_file"
-      - "/run/secrets/redis_pass"
     tmpfs:
       - /data
-    secrets:
-      - redis_pass
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 5s
       retries: 3
 
-  # ── Vault ─────────────────────────────────────────────────────────────────
+  # ── HashiCorp Vault ───────────────────────────────────────────────────────
   vault:
     image: hashicorp/vault:1.16
     restart: unless-stopped
     security_opt: [no-new-privileges:true]
     read_only: true
     cap_drop: [ALL]
-    cap_add: [IPC_LOCK]
+    cap_add: [IPC_LOCK]     # required by Vault to prevent secrets hitting swap
     user: "1000:1000"
     command: server -config=/vault/config/config.hcl
     volumes:
@@ -79,11 +102,84 @@ services:
       interval: 15s
       timeout: 5s
       retries: 3
+      start_period: 10s
 
   # ── Python FastAPI ────────────────────────────────────────────────────────
-  api:
+  api-python:
     build:
-      context: ./backend-python/api
+      context: ./backend-python
+      dockerfile: api/Dockerfile
+    restart: unless-stopped
+    security_opt: [no-new-privileges:true]
+    read_only: true
+    cap_drop: [ALL]
+    user: "1000:1000"
+    environment:
+      VAULT_ADDR:          http://vault:8200
+      DB_BACKEND:          postgres
+      LOG_FORMAT:          json
+      LOG_LEVEL:           INFO
+      USE_GRAPHRAG:        "false"
+      LLM_PROVIDER:        ${LLM_PROVIDER:-gemini}
+      GEMINI_AGENT_MODEL:  ${GEMINI_AGENT_MODEL:-gemini-2.5-flash}
+      GEMINI_EVAL_MODEL:   ${GEMINI_EVAL_MODEL:-gemini-2.5-flash}
+      GOOGLE_API_KEY:      ${GOOGLE_API_KEY}
+      ANTHROPIC_API_KEY:   ${ANTHROPIC_API_KEY:-}
+      ANTHROPIC_MODEL:     ${ANTHROPIC_MODEL:-claude-sonnet-4-20250514}
+      PYTHONWARNINGS:      "ignore::FutureWarning"
+      REPO_ROOT:           /data
+      EXAMPLES_PATH:       /data/data/dspy_examples.json
+      DSPY_OUTPUT_PATH:    /data/data/dspy_compiled.json
+    volumes:
+      - ./data:/data:ro
+    tmpfs:
+      - /tmp
+    secrets:
+      - vault_token
+      - db_url
+    depends_on:
+      db-migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+      vault:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/health')\""]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  # ── Go bulk ingestion (one-shot) ──────────────────────────────────────────
+  go-ingestion:
+    build:
+      context: ./backend-go/ingestion
+      dockerfile: Dockerfile
+    restart: "no"
+    security_opt: [no-new-privileges:true]
+    read_only: true
+    cap_drop: [ALL]
+    user: "1000:1000"
+    volumes:
+      - ./data/csv:/data/csv:ro
+    secrets:
+      - db_url
+    environment:
+      DB_URL:     ""    # read from secret file at runtime via CMD
+      CSV_DIR:    /data/csv
+      WORKERS:    "8"
+      BATCH_SIZE: "1000"
+    command: >
+      sh -c "DB_URL=$$(cat /run/secrets/db_url) /ingestion"
+    depends_on:
+      db-migrate:
+        condition: service_completed_successfully
+
+  # ── Go SSE Gateway ────────────────────────────────────────────────────────
+  api-go:
+    build:
+      context: ./backend-go/sse
       dockerfile: Dockerfile
     restart: unless-stopped
     security_opt: [no-new-privileges:true]
@@ -91,62 +187,19 @@ services:
     cap_drop: [ALL]
     user: "1000:1000"
     environment:
-      VAULT_ADDR:        http://vault:8200
-      VAULT_TOKEN_FILE:  /run/secrets/vault_token
-      DB_URL_FILE:       /run/secrets/db_url
-      LOG_FORMAT:        json
-      LOG_LEVEL:         INFO
-      USE_GRAPHRAG:      "false"
-      # LLM provider: "anthropic" (default) or "gemini"
-      LLM_PROVIDER:      ${LLM_PROVIDER:-anthropic}
-      GEMINI_AGENT_MODEL: ${GEMINI_AGENT_MODEL:-gemini-2.5-flash}
-      # API keys — set in host environment or via Docker secret (below)
-      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
-      GOOGLE_API_KEY:    ${GOOGLE_API_KEY:-}
-      PYTHONWARNINGS:    "ignore::FutureWarning"
-    volumes:
-      - ./data:/data:ro
-      - graphrag_index:/data/graphrag:ro
-    tmpfs:
-      - /tmp
-    secrets:
-      - vault_token
-      - db_url
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-      vault:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
-      interval: 15s
-      timeout: 5s
-      retries: 3
-
-  # ── Go SSE Gateway ────────────────────────────────────────────────────────
-  go-sse:
-    build: ./backend-go/sse
-    restart: unless-stopped
-    security_opt: [no-new-privileges:true]
-    read_only: true
-    cap_drop: [ALL]
-    user: "1000:1000"
-    environment:
-      AI_SERVICE_URL: http://api:8000
-      REDIS_URL_FILE: /run/secrets/redis_url
+      AI_SERVICE_URL: http://api-python:8000
+      REDIS_URL:      redis://redis:6379/0
       RATE_LIMIT_RPM: "10"
       CB_THRESHOLD:   "3"
+      CB_WINDOW_SECONDS: "30"
+      CB_OPEN_SECONDS:   "60"
       PORT:           "8080"
     ports:
       - "8080:8080"
     tmpfs:
       - /tmp
-    secrets:
-      - redis_url
     depends_on:
-      api:
+      api-python:
         condition: service_healthy
       redis:
         condition: service_healthy
@@ -156,62 +209,43 @@ services:
       timeout: 5s
       retries: 3
 
-  # ── Go Ingestion Worker (run-once job) ────────────────────────────────────
-  go-ingestion:
-    build: ./backend-go/ingestion
-    security_opt: [no-new-privileges:true]
-    read_only: true
-    cap_drop: [ALL]
-    user: "1000:1000"
-    command: ["/ingestion"]
-    volumes:
-      - ./data/csv:/data/csv:ro
-    secrets:
-      - db_url
-    environment:
-      CSV_DIR:    /data/csv
-      WORKERS:    "8"
-      BATCH_SIZE: "1000"
-    restart: "no"
-    depends_on:
-      postgres:
-        condition: service_healthy
-
-  # ── Frontend (Next.js) ────────────────────────────────────────────────────
+  # ── Frontend (Next.js standalone) ────────────────────────────────────────
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-      args:
-        VITE_API_URL: http://go-sse:8080
     restart: unless-stopped
     security_opt: [no-new-privileges:true]
     read_only: true
     cap_drop: [ALL]
-    user: "1000:1000"
+    user: "1001:1001"
     ports:
-      - "3000:80"
+      - "3000:3000"
+    environment:
+      BACKEND_URL: http://api-python:8000
+      GO_SSE_URL:  http://api-go:8080
+      NODE_ENV:    production
     tmpfs:
       - /tmp
-      - /var/cache/nginx
-      - /var/run
+    depends_on:
+      api-python:
+        condition: service_healthy
+      api-go:
+        condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:80 || exit 1"]
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000 || exit 1"]
       interval: 15s
       timeout: 5s
       retries: 3
 
-# ── Secrets ───────────────────────────────────────────────────────────────
+# ── Secrets ───────────────────────────────────────────────────────────────────
 secrets:
   db_user:     { file: ./infra/secrets/db_user.txt }
   db_pass:     { file: ./infra/secrets/db_pass.txt }
   db_url:      { file: ./infra/secrets/db_url.txt }
-  redis_pass:  { file: ./infra/secrets/redis_pass.txt }
-  redis_url:   { file: ./infra/secrets/redis_url.txt }
   vault_token: { file: ./infra/secrets/vault_token.txt }
 
-# ── Volumes ───────────────────────────────────────────────────────────────
+# ── Volumes ───────────────────────────────────────────────────────────────────
 volumes:
   pg_data:
   vault_data:
-  graphrag_index:

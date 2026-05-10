@@ -113,7 +113,7 @@ def gemini_generate(prompt: str, temperature: float = 0.0, max_tokens: int = 64)
     response = client.generate_content(prompt, generation_config=config)
 
     try:
-        from python.api.observability.token_cost import extract_usage_gemini, record_token_cost
+        from observability.token_cost import extract_usage_gemini, record_token_cost
         input_tokens, output_tokens = extract_usage_gemini(response)
         record_token_cost(GEMINI_EVAL_MODEL, input_tokens, output_tokens)
     except Exception:

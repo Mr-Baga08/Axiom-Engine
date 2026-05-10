@@ -3,23 +3,30 @@
 import type { UIMessage } from "@ai-sdk/react";
 import dynamic from "next/dynamic";
 import ReactMarkdown from "react-markdown";
-import ToolTrace from "@/components/ToolTrace";
-import type { ChartPayload, SSEToolCallEvent } from "@/types/app-types";
+import FilterBar from "@/components/filter-bar";
+import ToolTrace from "@/components/tool-trace";
+import type {
+  ChartPayload,
+  FilterState,
+  SSEToolCallEvent,
+} from "@/types/app-types";
 
-const InsightsChart = dynamic(() => import("@/components/InsightsChart"), {
+const InsightsChart = dynamic(() => import("@/components/insights-chart"), {
   ssr: false,
 });
 
 // Runtime shape of tool-call parts (AI SDK v3 types don't surface this directly)
 interface ToolCallPart {
-  type: "tool-call";
+  input: unknown;
   toolCallId: string;
   toolName: string;
-  input: unknown;
+  type: "tool-call";
 }
 
 function tryParseChartPayload(input: unknown): ChartPayload | null {
-  if (!input || typeof input !== "object") return null;
+  if (!input || typeof input !== "object") {
+    return null;
+  }
   const obj = input as Record<string, unknown>;
   // Backend sends "type" (not "chartType") — verified in agent.py generate_chart
   if (
@@ -35,43 +42,56 @@ function tryParseChartPayload(input: unknown): ChartPayload | null {
 }
 
 interface Props {
+  filters: FilterState;
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   hasChart: boolean;
   input: string;
   isLoading: boolean;
   messages: UIMessage[];
+  onFilterChange: (filters: FilterState) => void;
   onOpenInsights: () => void;
 }
 
 export default function ChatPanel({
-  messages,
-  input,
-  isLoading,
-  hasChart,
+  filters,
   handleInputChange,
   handleSubmit,
+  hasChart,
+  input,
+  isLoading,
+  messages,
+  onFilterChange,
   onOpenInsights,
 }: Props) {
   return (
     <section className="flex min-h-0 flex-1 flex-col">
+      <FilterBar filters={filters} onChange={onFilterChange} />
       <div className="flex-1 space-y-4 overflow-y-auto p-4">
+        {/* Thinking indicator — shows while the agent is running */}
+        {isLoading && (
+          <div className="flex items-center gap-2 font-mono text-xs text-blueprint/40">
+            <span className="animate-pulse">●</span>
+            <span className="animate-pulse" style={{ animationDelay: "0.2s" }}>●</span>
+            <span className="animate-pulse" style={{ animationDelay: "0.4s" }}>●</span>
+            <span className="ml-1">AXIOM ENGINE THINKING…</span>
+          </div>
+        )}
+
         {messages.map((m) => {
           const text =
-            m.parts
-              ?.filter(
-                (p): p is Extract<typeof p, { type: "text" }> =>
-                  p.type === "text"
-              )
-              .map((p) => p.text)
-              .join("") ?? "";
+            (m.parts ?? [])
+              .filter((p) => p.type === "text")
+              .map((p) => (p as { type: string; text?: string }).text ?? "")
+              .join("");
 
+          // ai@6: tool parts have type "tool-{toolName}" (e.g. "tool-query_sql")
           const toolCallParts: ToolCallPart[] =
-            m.role !== "user"
-              ? (m.parts ?? [])
-                  .filter((p) => p.type === "tool-call")
-                  .map((p) => p as unknown as ToolCallPart)
-              : [];
+            m.role === "user"
+              ? []
+              : (m.parts ?? [])
+                  .filter((p) => (p.type as string).startsWith("tool-") && "toolCallId" in p)
+                  .map((p) => p as unknown as ToolCallPart);
 
           const toolEvents: SSEToolCallEvent[] = toolCallParts
             .filter((p) => p.toolName !== "show_reasoning")
@@ -152,14 +172,14 @@ export default function ChatPanel({
                   );
                 })}
 
-              {m.role !== "user" ? (
+              {m.role === "user" ? null : (
                 <>
                   <ToolTrace events={toolEvents} />
                   {chartPayload ? (
                     <InsightsChart payload={chartPayload} />
                   ) : null}
                 </>
-              ) : null}
+              )}
             </div>
           );
         })}

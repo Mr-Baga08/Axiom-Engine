@@ -13,12 +13,20 @@ from __future__ import annotations
 from typing import NamedTuple
 
 from presidio_analyzer import AnalyzerEngine, RecognizerResult
+from presidio_analyzer.nlp_engine import NlpEngineProvider
 from presidio_anonymizer import AnonymizerEngine
 from presidio_anonymizer.entities import OperatorConfig
 
 # ── Engine singletons ──────────────────────────────────────────────────────────
+# Force en_core_web_sm (12 MB) instead of the default en_core_web_lg (400 MB).
+# The small model is fully sufficient for PERSON/EMAIL/PHONE/IP detection.
 
-_analyzer = AnalyzerEngine()
+_nlp_engine = NlpEngineProvider(nlp_configuration={
+    "nlp_engine_name": "spacy",
+    "models": [{"lang_code": "en", "model_name": "en_core_web_sm"}],
+}).create_engine()
+
+_analyzer = AnalyzerEngine(nlp_engine=_nlp_engine, supported_languages=["en"])
 _anonymizer = AnonymizerEngine()
 
 # ── PII entity types to detect ─────────────────────────────────────────────────

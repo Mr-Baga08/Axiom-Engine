@@ -36,23 +36,19 @@ def get_rag():
     if _rag is not None:
         return _rag
 
-    from lightrag import LightRAG, QueryParam  # noqa: F401 – QueryParam used by callers
-    import chromadb
+    try:
+        from lightrag import LightRAG  # noqa: F401
 
-    embed_model = os.getenv("EMBED_MODEL", "all-MiniLM-L6-v2")
-    persist_dir = os.getenv("CHROMA_PERSIST_DIR", "data/chroma")
+        persist_dir = os.getenv("CHROMA_PERSIST_DIR", "data/chroma")
+        working_dir = os.path.join(persist_dir, "lightrag_graph")
+        os.makedirs(working_dir, exist_ok=True)
 
-    chroma_client = chromadb.PersistentClient(path=persist_dir)
-
-    _rag = LightRAG(
-        embedding_model=embed_model,
-        vector_db=chroma_client,
-        # working_dir stores LightRAG's internal KV graph cache
-        working_dir=os.path.join(persist_dir, "lightrag_graph"),
-    )
-
-    logger.info("LightRAG initialised (embed_model=%s)", embed_model)
-    return _rag
+        _rag = LightRAG(working_dir=working_dir)
+        logger.info("LightRAG initialised (working_dir=%s)", working_dir)
+        return _rag
+    except Exception as exc:
+        logger.warning("lightrag init failed (%s); PDF retrieval disabled", exc)
+        return None
 
 
 def index_chunks(chunks: list[dict[str, Any]]) -> None:

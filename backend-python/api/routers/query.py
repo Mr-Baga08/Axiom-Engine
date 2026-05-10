@@ -1,63 +1,56 @@
 from fastapi import APIRouter, Depends, HTTPException, Request, status
+from pydantic import BaseModel, Field
 
 from auth.rbac import require_scope
 from middleware.rate_limiter import limiter
 from observability.audit import record
 from security.input_validator import validate_query
-from security.pii_scrubber import scrub
 
 router = APIRouter(tags=["query"])
+
+
+class QueryBody(BaseModel):
+    question: str = Field(..., min_length=1, max_length=2048)
 
 
 @router.post("/query")
 @limiter.limit("10/minute")
 async def query(
     request: Request,
-    body: dict,
+    body: QueryBody,
     token: dict = Depends(require_scope("query:read")),
 ):
-    """
-    Main query endpoint. Validates input, scrubs PII from context,
-    and runs the pipeline.
-    """
-    # Inject db from app state in real usage: db = request.app.state.db
-    db = getattr(request.app.state, "db", None)
+    """REST query endpoint — same agent pipeline as /api/chat."""
+    from agent import run_agent
 
-    raw = body.get("question", "")
+    db = getattr(request.app.state, "db_pool", None) or getattr(request.app.state, "db", None)
 
-    # ── Input validation ─────────────────────────────────────────────────────
     try:
-        clean_question = validate_query(raw)
+        clean_question = validate_query(body.question)
     except ValueError as exc:
         if db:
-            await record(
-                db,
-                token=token,
-                action="query",
-                resource="route:/query",
-                raw_query=raw,
-                ip_address=request.client.host,
-                status="error",
-                detail={"reason": str(exc)},
-            )
+            await record(db, token=token, action="query", resource="route:/query",
+                         raw_query=body.question, ip_address=request.client.host,
+                         status="error", detail={"reason": str(exc)})
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc))
 
-    # ── Pipeline (replace with real logic) ───────────────────────────────────
-    # assembled_context = await build_context(clean_question)
-    # clean_context, _, _ = scrub(assembled_context)   # PII scrub before LLM
-    # result = await llm_call(clean_context)
-    result = {"answer": "Pipeline placeholder — replace with real logic."}
+    schema   = getattr(request.app.state, "schema_ddl", "")
+    examples = getattr(request.app.state, "few_shot_examples", [])
 
-    # ── Audit success ────────────────────────────────────────────────────────
-    if db:
-        await record(
-            db,
-            token=token,
-            action="query",
-            resource="route:/query",
-            raw_query=raw,
-            ip_address=request.client.host,
-            status="success",
+    try:
+        result = await run_agent(
+            question=clean_question,
+            token_data=token,
+            db=db,
+            schema=schema,
+            examples=examples,
         )
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail="Agent error — check server logs")
+
+    if db:
+        await record(db, token=token, action="query", resource="route:/query",
+                     raw_query=body.question, ip_address=request.client.host,
+                     status="success", detail={"tool_count": len(result.get("tool_trace", []))})
 
     return result

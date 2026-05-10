@@ -130,7 +130,6 @@ async def run_agent(
     question: str,
     token_data: Dict[str, Any],
     db,           # DuckDB or asyncpg connection
-    rag,          # LightRAG instance
     schema: str,  # DDL string from get_schema_ddl()
     examples: List[Dict],
 ) -> Dict[str, Any]:
@@ -161,15 +160,27 @@ async def run_agent(
 
     allowed_tools = _ROLE_TOOLS.get(user_role, set())
 
-    # System prompt
-    system_prompt = get_prompt(
-        "dspy-entertainment-analysis",
-        {
-            "question":    question,
-            "sql_results": "",
-            "doc_context": "",
-        },
-    ).split("Question:")[0].strip()  # Use only the persona prefix
+    # System prompt: base persona + DSPy compiled few-shot demonstrations.
+    # The few-shot block is loaded once at startup from data/dspy_compiled.json
+    # (or data/dspy_examples.json as fallback) and costs zero extra API calls.
+    base_persona = (
+        "You are an expert entertainment analytics assistant.\n"
+        "Use the tools available to answer questions about movies, viewers, "
+        "watch activity, reviews, marketing spend, and regional performance.\n"
+        "Always cite the source of any numbers you state (SQL query or document).\n"
+        "Be concise and precise."
+    )
+
+    few_shot_block = ""
+    if examples:
+        demos = examples[:4]  # cap at 4 to avoid excessive prompt length
+        lines = ["\n\nExamples of well-reasoned answers:\n"]
+        for ex in demos:
+            lines.append(f"Q: {ex.get('question', '')}")
+            lines.append(f"A: {ex.get('answer', '')}\n")
+        few_shot_block = "\n".join(lines)
+
+    system_prompt = base_persona + few_shot_block
 
     llm = make_llm_client(tools=TOOLS)
     llm.reset(system=system_prompt, first_user_message=question)
@@ -219,7 +230,6 @@ async def run_agent(
                     tool_name=tc.tool_name,
                     tool_input=tc.tool_input,
                     db=db,
-                    rag=rag,
                     schema=schema,
                     examples=examples,
                     user_role=user_role,
@@ -257,7 +267,7 @@ async def run_agent(
     # Record faithfulness AFTER answer is available — not before.
     # Uses the new split-timing eval (Gemini-backed, separate Redis key).
     try:
-        from python.api.observability.rag_eval import record_faithfulness
+        from observability.rag_eval import record_faithfulness
         chunk_texts = [
             c.get("text", "") if isinstance(c, dict) else getattr(c, "text", "")
             for c in retrieved_chunks
@@ -296,7 +306,6 @@ async def _dispatch_tool(
     tool_name: str,
     tool_input: Dict[str, Any],
     db,
-    rag,
     schema: str,
     examples: List[Dict],
     user_role: str,
@@ -329,19 +338,23 @@ async def _dispatch_tool(
 
     elif tool_name == "retrieve_docs":
         query = tool_input["query"]
-        top_k = tool_input.get("top_k", 5)
 
-        chunks = await crag_retrieve(
-            query=query,
-            rag=rag,
+        crag_result = crag_retrieve(
+            question=query,
             user_role=user_role,
-            top_k=top_k,
         )
+        chunks = crag_result.chunks
         chunks_accumulator.extend(chunks)
-        sources.extend(c.get("source", "unknown") for c in chunks)
+        sources.extend(c.metadata.get("source", "unknown") for c in chunks)
 
-        return [{"text": c["text"][:500], "source": c["source"], "score": c["relevance_score"]}
-                for c in chunks], sources
+        return [
+            {
+                "text": c.text[:500],
+                "source": c.metadata.get("source", "unknown"),
+                "score": c.relevance,
+            }
+            for c in chunks
+        ], sources
 
     elif tool_name == "generate_chart":
         # Chart spec construction (consumed by React frontend)

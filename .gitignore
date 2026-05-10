@@ -1,48 +1,44 @@
-# --- Python Backend ---
+# --- Python ---
 __pycache__/
 backend-python/*.py[cod]
 backend-python/*$py.class
 backend-python/venv/
 backend-python/env/
 backend-python/.venv/
+backend-python/python-backend-axiom/
 backend-python/.env.python
 backend-python/.pytest_cache/
-axiom-engine/backend-python/api/auth/keys
 
-# --- Go Backend ---
+# --- Go ---
 /backend-go/bin/
 *.exe
-*.exe~
 *.dll
 *.so
 *.dylib
 *.test
 *.out
 
-# --- Docker & Data ---
-data/csv/*.csv
-data/pdfs/*.pdf
-!data/csv/.gitkeep
-!data/pdfs/.gitkeep
-data/pdfs/
+# --- Data ---
+# CSVs are committed so the repo is self-contained out of the box.
+# Regenerate with: python3 scripts/generate_data.py
+data/duckdb/analytics.duckdb
 data/chroma/
-data/examples.json
+data/lightrag/
 
-# --- Node.js Frontend ---
+# --- Frontend ---
 /frontend/node_modules/
 /frontend/.next/
-/frontend/.env.local
 /frontend/.env.development.local
 /frontend/.env.test.local
 /frontend/.env.production.local
-/frontend/.DS_Store 
+/frontend/.DS_Store
 
 # --- Secrets (never commit) ---
+.env
+/frontend/.env.local
 infra/secrets/*.txt
 
 # --- Misc ---
 *.log
 .DS_Store
 .idea/
-.vscode/
-.env

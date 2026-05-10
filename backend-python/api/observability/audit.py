@@ -1,15 +1,15 @@
 """
-Audit logger — appends one row per significant action to the audit_log table.
+Audit logger — appends one row per significant action to audit_log.
 
-Rules enforced at the DB level (see migration in Step 1):
-    - The app role has INSERT + SELECT only. UPDATE and DELETE are revoked.
-    - Rows cannot be modified after creation.
+Supports two DB backends:
+  - asyncpg (PostgreSQL): async execute with $1/$2 parameters
+  - DuckDB:               sync execute with ? parameters (dev mode)
 
-This module never raises — a logging failure must not break the user request.
-Errors are written to the standard logger at WARNING level.
+This module never raises — a logging failure must never break a user request.
 """
 from __future__ import annotations
 
+import inspect
 import json
 import logging
 from typing import Any
@@ -18,44 +18,61 @@ from auth.jwt_handler import hash_query
 
 logger = logging.getLogger(__name__)
 
+_DUCKDB_SQL = """
+    INSERT INTO audit_log
+        (user_uid, user_role, action, resource, query_hash,
+         ip_address, status, detail)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+"""
+
+_PG_SQL = """
+    INSERT INTO audit_log
+        (user_uid, user_role, action, resource, query_hash,
+         ip_address, status, detail)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+"""
+
 
 async def record(
-    db,                          # your async DB connection / pool
+    db,
     *,
-    token: dict[str, Any],       # decoded JWT payload from verify_token
-    action: str,                 # 'query' | 'ingest' | 'tool_call' | 'denied' | 'error'
-    resource: str,               # 'document:42' | 'tool:render_chart' | 'route:/query'
-    raw_query: str = "",         # raw user input — stored as hash only, never plain text
+    token: dict[str, Any],
+    action: str,
+    resource: str,
+    raw_query: str = "",
     ip_address: str | None = None,
-    status: str = "success",     # 'success' | 'denied' | 'error'
+    status: str = "success",
     detail: dict[str, Any] | None = None,
 ) -> None:
     """
-    Insert one row into audit_log.
-
-    This function is a fire-and-forget coroutine — call it with `await` but
-    do not let its failure propagate. Wrap callers in try/except if needed.
-
-    The raw_query is hashed with SHA-256 before storage. The original text
-    is never persisted.
+    Insert one audit row. Fire-and-forget — never raises.
+    Works with both asyncpg (PostgreSQL) and DuckDB connection objects.
     """
+    if db is None:
+        return
+
+    params = (
+        token.get("sub", "unknown"),
+        token.get("role", "unknown"),
+        action,
+        resource,
+        hash_query(raw_query) if raw_query else "",
+        ip_address,
+        status,
+        json.dumps(detail or {}),
+    )
+
     try:
-        await db.execute(
-            """
-            INSERT INTO audit_log
-                (user_uid, user_role, action, resource, query_hash,
-                 ip_address, status, detail)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8::jsonb)
-            """,
-            token.get("sub", "unknown"),
-            token.get("role", "unknown"),
-            action,
-            resource,
-            hash_query(raw_query) if raw_query else "",
-            ip_address,
-            status,
-            json.dumps(detail or {}),
-        )
+        execute = getattr(db, "execute", None)
+        if execute is None:
+            return
+
+        if inspect.iscoroutinefunction(execute):
+            # asyncpg pool / connection — async, $1 placeholders
+            await execute(_PG_SQL, *params)
+        else:
+            # DuckDB — sync, ? placeholders; audit_log may not exist in dev
+            execute(_DUCKDB_SQL, list(params))
+
     except Exception as exc:
-        # Never crash the request over a logging failure
         logger.warning("audit_log insert failed: %s", exc)

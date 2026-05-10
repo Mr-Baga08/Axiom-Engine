@@ -258,12 +258,24 @@ func main() {
 		path := filepath.Join(csvDir, entry.Name())
 		tableName := strings.TrimSuffix(filepath.Base(path), ".csv")
 
+		// Skip tables that already have data — makes the service safe to re-run.
+		var existingCount int64
+		if err := pool.QueryRow(
+			context.Background(),
+			fmt.Sprintf("SELECT COUNT(*) FROM %s", tableName),
+		).Scan(&existingCount); err == nil && existingCount > 0 {
+			slog.Info("table already populated, skipping",
+				"table", tableName, "existing_rows", existingCount)
+			totalRows += int(existingCount)
+			continue
+		}
+
 		slog.Info("ingesting file", "file", entry.Name(), "table", tableName)
 
 		rows, err := ingestFile(context.Background(), pool, path, tableName, workers, batchSize)
 		if err != nil {
 			slog.Error("ingestion failed", "table", tableName, "error", err)
-			continue // proceed with remaining files
+			continue
 		}
 
 		totalRows += rows

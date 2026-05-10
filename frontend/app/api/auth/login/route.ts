@@ -29,7 +29,10 @@ export async function POST(req: Request) {
       body: JSON.stringify({ username, password }),
     });
     if (pyRes.ok) {
-      const pyData = (await pyRes.json()) as { access_token: string; uid: string };
+      const pyData = (await pyRes.json()) as {
+        access_token: string;
+        uid: string;
+      };
       apiToken = pyData.access_token;
       resolvedUid = pyData.uid;
     }
@@ -42,14 +45,14 @@ export async function POST(req: Request) {
     jar.set("api_token", apiToken, {
       httpOnly: true,
       path: "/",
-      maxAge: 60 * 30,
+      maxAge: 60 * 60 * 8, // match mock_session so both expire together
       sameSite: "strict",
     });
-    jar.set(
-      "mock_session",
-      JSON.stringify({ uid: resolvedUid, username }),
-      { httpOnly: true, path: "/", maxAge: 60 * 60 * 8 }
-    );
+    jar.set("mock_session", JSON.stringify({ uid: resolvedUid, username }), {
+      httpOnly: true,
+      path: "/",
+      maxAge: 60 * 60 * 8,
+    });
     return NextResponse.json({ uid: resolvedUid, username });
   }
 

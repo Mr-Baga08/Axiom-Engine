@@ -1,0 +1,16 @@
+movie_id,title,genre,release_date,budget_usd,box_office_usd,rating,director,runtime_mins,release_year,streaming_release_date,status
+1,Stellar Run,Sci-Fi,2025-01-15,180000000,820000000,4.7,Ava Chen,118,2025,2025-04-15,released
+2,Dark Orbit,Action,2025-02-08,220000000,680000000,4.1,Marcus Webb,132,2025,2025-05-09,released
+3,Iron Horizon,Action,2025-03-22,195000000,540000000,3.9,Priya Nair,127,2025,2025-06-20,released
+4,Last Kingdom,Drama,2025-02-14,85000000,310000000,4.4,James Okafor,104,2025,2025-05-15,released
+5,The Still Season,Drama,2025-04-05,42000000,195000000,4.6,Sofia Reyes,98,2025,2025-07-04,released
+6,Laughing Stock,Comedy,2025-01-28,55000000,38000000,2.4,Tom Briggs,95,2025,2025-04-28,released
+7,Date Night Chaos,Comedy,2025-03-10,40000000,29000000,2.6,Linda Park,92,2025,2025-06-08,released
+8,Family Fumbles,Comedy,2025-04-18,35000000,22000000,2.3,Ray Santos,88,2025,2025-07-17,released
+9,Velocity Protocol,Thriller,2025-01-05,130000000,480000000,4.0,Elena Marsh,115,2025,2025-04-05,released
+10,Neon Requiem,Thriller,2025-03-30,95000000,280000000,3.8,David Kim,108,2025,2025-06-28,released
+11,Phantom Circuit,Sci-Fi,2024-06-12,160000000,620000000,4.2,Ava Chen,122,2024,2024-09-10,released
+12,The Long Silence,Drama,2024-08-20,50000000,210000000,4.5,James Okafor,101,2024,2024-11-18,released
+13,Outlaw Season,Action,2024-11-08,140000000,490000000,3.7,Marcus Webb,119,2024,2025-02-06,released
+14,Comic Relief,Comedy,2024-05-01,48000000,31000000,2.5,Tom Briggs,90,2024,2024-07-30,released
+15,Zero Gravity,Sci-Fi,2024-09-15,175000000,710000000,4.3,Priya Nair,125,2024,2024-12-14,released

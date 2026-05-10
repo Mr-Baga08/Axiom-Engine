@@ -1,0 +1,242 @@
+[
+  {
+    "question": "Which genre had the highest total box office revenue?",
+    "sql_results": "[{\"genre\": \"Sci-Fi\", \"total_revenue\": 2150000000.0}]",
+    "doc_context": "",
+    "answer": "The Sci-Fi genre had the highest total box office revenue at $2,150,000,000."
+  },
+  {
+    "question": "What are the top 3 movies by box office revenue?",
+    "sql_results": "[{\"title\": \"Stellar Run\", \"box_office_usd\": 820000000}, {\"title\": \"Zero Gravity\", \"box_office_usd\": 710000000}, {\"title\": \"Dark Orbit\", \"box_office_usd\": 680000000}]",
+    "doc_context": "",
+    "answer": "The top 3 movies by box office revenue are Stellar Run, Zero Gravity, Dark Orbit."
+  },
+  {
+    "question": "What is the average movie rating per genre?",
+    "sql_results": "[{\"genre\": \"Drama\", \"avg_rating\": 4.5}, {\"genre\": \"Sci-Fi\", \"avg_rating\": 4.4}, {\"genre\": \"Action\", \"avg_rating\": 3.9}, {\"genre\": \"Thriller\", \"avg_rating\": 3.9}, {\"genre\": \"Comedy\", \"avg_rating\": 2.45}]",
+    "doc_context": "",
+    "answer": "Average ratings by genre: Drama (4.5); Sci-Fi (4.4); Action (3.9); Thriller (3.9); Comedy (2.45)."
+  },
+  {
+    "question": "Which subscription tier has the most viewers?",
+    "sql_results": "[{\"subscription_tier\": \"premium\", \"viewer_count\": 204}]",
+    "doc_context": "",
+    "answer": "The 'premium' tier has the most viewers with 204 subscribers."
+  },
+  {
+    "question": "Which device type has the highest average watch duration?",
+    "sql_results": "[{\"device_type\": \"tablet\", \"avg_mins\": 78.8}, {\"device_type\": \"smart_tv\", \"avg_mins\": 78.7}, {\"device_type\": \"mobile\", \"avg_mins\": 78.7}, {\"device_type\": \"laptop\", \"avg_mins\": 78.6}]",
+    "doc_context": "",
+    "answer": "'tablet' users watch the longest on average at 78.8 minutes per session."
+  },
+  {
+    "question": "Which movies have an average completion rate above 80%?",
+    "sql_results": "[{\"title\": \"Last Kingdom\", \"avg_completion\": 0.84}, {\"title\": \"The Still Season\", \"avg_completion\": 0.84}, {\"title\": \"The Long Silence\", \"avg_completion\": 0.83}]",
+    "doc_context": "",
+    "answer": "Movies with average completion above 80%: Last Kingdom, The Still Season, The Long Silence."
+  },
+  {
+    "question": "Which genre has received the most reviews?",
+    "sql_results": "[{\"genre\": \"Sci-Fi\", \"review_count\": 301}]",
+    "doc_context": "",
+    "answer": "The Sci-Fi genre has received the most reviews (301 total)."
+  },
+  {
+    "question": "What is the breakdown of review sentiment across all movies?",
+    "sql_results": "[{\"sentiment\": \"positive\", \"count\": 579}, {\"sentiment\": \"neutral\", \"count\": 228}, {\"sentiment\": \"negative\", \"count\": 93}]",
+    "doc_context": "",
+    "answer": "Review sentiment breakdown: positive (64%); neutral (25%); negative (10%)."
+  },
+  {
+    "question": "Which countries generate the most regional revenue?",
+    "sql_results": "[{\"country\": \"India\", \"total_revenue\": 117187.0}, {\"country\": \"UK\", \"total_revenue\": 104013.0}, {\"country\": \"Brazil\", \"total_revenue\": 101461.0}]",
+    "doc_context": "",
+    "answer": "The top countries by regional revenue are India, UK, Brazil."
+  },
+  {
+    "question": "Which movies had the highest return on investment?",
+    "sql_results": "[{\"title\": \"The Still Season\", \"genre\": \"Drama\", \"roi_pct\": 364.3}, {\"title\": \"Stellar Run\", \"genre\": \"Sci-Fi\", \"roi_pct\": 355.6}, {\"title\": \"The Long Silence\", \"genre\": \"Drama\", \"roi_pct\": 320.0}]",
+    "doc_context": "",
+    "answer": "'The Still Season' had the highest ROI at 364.3%, followed by Stellar Run, The Long Silence."
+  },
+  {
+    "question": "How many movies were released per genre?",
+    "sql_results": "[{\"genre\": \"Comedy\", \"movie_count\": 4}, {\"genre\": \"Action\", \"movie_count\": 3}, {\"genre\": \"Drama\", \"movie_count\": 3}, {\"genre\": \"Sci-Fi\", \"movie_count\": 3}, {\"genre\": \"Thriller\", \"movie_count\": 2}]",
+    "doc_context": "",
+    "answer": "Movie count by genre: Comedy (4), Action (3), Drama (3), Sci-Fi (3), Thriller (2)."
+  },
+  {
+    "question": "What is the average budget for movies by genre?",
+    "sql_results": "[{\"genre\": \"Action\", \"avg_budget_m\": 185.0}, {\"genre\": \"Sci-Fi\", \"avg_budget_m\": 171.7}, {\"genre\": \"Thriller\", \"avg_budget_m\": 112.5}, {\"genre\": \"Drama\", \"avg_budget_m\": 59.0}, {\"genre\": \"Comedy\", \"avg_budget_m\": 44.5}]",
+    "doc_context": "",
+    "answer": "Average budgets (millions): Action ($185.0M); Sci-Fi ($171.7M); Thriller ($112.5M); Drama ($59.0M); Comedy ($44.5M)."
+  },
+  {
+    "question": "Which movies have the lowest viewer ratings?",
+    "sql_results": "[{\"title\": \"Family Fumbles\", \"genre\": \"Comedy\", \"rating\": 2.3}, {\"title\": \"Laughing Stock\", \"genre\": \"Comedy\", \"rating\": 2.4}, {\"title\": \"Comic Relief\", \"genre\": \"Comedy\", \"rating\": 2.5}, {\"title\": \"Date Night Chaos\", \"genre\": \"Comedy\", \"rating\": 2.6}, {\"title\": \"Outlaw Season\", \"genre\": \"Action\", \"rating\": 3.7}]",
+    "doc_context": "",
+    "answer": "Lowest rated movies: Family Fumbles (2.3), Laughing Stock (2.4), Comic Relief (2.5), Date Night Chaos (2.6), Outlaw Season (3.7)."
+  },
+  {
+    "question": "What is the total watch activity by device type?",
+    "sql_results": "[{\"device_type\": \"tablet\", \"sessions\": 657}, {\"device_type\": \"mobile\", \"sessions\": 624}, {\"device_type\": \"smart_tv\", \"sessions\": 621}, {\"device_type\": \"laptop\", \"sessions\": 598}]",
+    "doc_context": "",
+    "answer": "Watch sessions by device: tablet (657), mobile (624), smart_tv (621), laptop (598)."
+  },
+  {
+    "question": "Which genre has the highest average viewer completion rate?",
+    "sql_results": "[{\"genre\": \"Drama\", \"pct\": 83.5}]",
+    "doc_context": "",
+    "answer": "The Drama genre has the highest average completion rate at 83.5%."
+  },
+  {
+    "question": "How many unique viewers have watched at least one movie?",
+    "sql_results": "[{\"unique_viewers\": 592}]",
+    "doc_context": "",
+    "answer": "592 unique viewers have watched at least one movie."
+  },
+  {
+    "question": "What is the monthly trend in watch activity?",
+    "sql_results": "[{\"month\": \"2025-04\", \"sessions\": 1022}, {\"month\": \"2025-03\", \"sessions\": 479}, {\"month\": \"2025-02\", \"sessions\": 335}, {\"month\": \"2025-01\", \"sessions\": 178}, {\"month\": \"2024-12\", \"sessions\": 87}, {\"month\": \"2024-11\", \"sessions\": 114}]",
+    "doc_context": "",
+    "answer": "Recent monthly watch sessions: 2025-04: 1,022, 2025-03: 479, 2025-02: 335, 2025-01: 178, 2024-12: 87, 2024-11: 114."
+  },
+  {
+    "question": "Which preferred genre do viewers most commonly have?",
+    "sql_results": "[{\"preferred_genre\": \"Action\", \"count\": 134}]",
+    "doc_context": "",
+    "answer": "The most common preferred genre among viewers is Action (134 viewers)."
+  },
+  {
+    "question": "What is the average age of viewers by subscription tier?",
+    "sql_results": "[{\"subscription_tier\": \"standard\", \"avg_age\": 41.4}, {\"subscription_tier\": \"free\", \"avg_age\": 41.0}, {\"subscription_tier\": \"premium\", \"avg_age\": 40.5}]",
+    "doc_context": "",
+    "answer": "Average age by tier: standard (41.4); free (41.0); premium (40.5)."
+  },
+  {
+    "question": "Which movies were released in the last year?",
+    "sql_results": "[{\"title\": \"Family Fumbles\", \"genre\": \"Comedy\", \"release_date\": \"2025-04-18 00:00:00\"}, {\"title\": \"The Still Season\", \"genre\": \"Drama\", \"release_date\": \"2025-04-05 00:00:00\"}, {\"title\": \"Neon Requiem\", \"genre\": \"Thriller\", \"release_date\": \"2025-03-30 00:00:00\"}, {\"title\": \"Iron Horizon\", \"genre\": \"Action\", \"release_date\": \"2025-03-22 00:00:00\"}, {\"title\": \"Date Night Chaos\", \"genre\": \"Comedy\", \"release_date\": \"2025-03-10 00:00:00\"}, {\"title\": \"Last Kingdom\", \"genre\": \"Drama\", \"release_date\": \"2025-02-14 00:00:00\"}, {\"title\": \"Dark Orbit\", \"genre\": \"Action\", \"release_date\": \"2025-02-08 00:00:00\"}, {\"title\": \"Laughing Stock\", \"genre\": \"Comedy\", \"release_date\": \"2025-01-28 00:00:00\"}, {\"title\": \"Stellar Run\", \"genre\": \"Sci-Fi\", \"release_date\": \"2025-01-15 00:00:00\"}, {\"title\": \"Velocity Protocol\", \"genre\": \"Thriller\", \"release_date\": \"2025-01-05 00:00:00\"}]",
+    "doc_context": "",
+    "answer": "10 movies released in 2024 or later, including: Family Fumbles, The Still Season, Neon Requiem, Iron Horizon, Date Night Chaos."
+  },
+  {
+    "question": "What percentage of movies are rated above 4.0?",
+    "sql_results": "[{\"pct\": 46.7}]",
+    "doc_context": "",
+    "answer": "Based on the data: [{\"pct\": 46.7}]"
+  },
+  {
+    "question": "Which director has directed the most movies?",
+    "sql_results": "[{\"director\": \"Tom Briggs\", \"count\": 2}]",
+    "doc_context": "",
+    "answer": "Based on the data: [{\"director\": \"Tom Briggs\", \"count\": 2}]"
+  },
+  {
+    "question": "What is the total revenue across all regions?",
+    "sql_results": "[{\"total\": 815170.0}]",
+    "doc_context": "",
+    "answer": "Based on the data: [{\"total\": 815170.0}]"
+  },
+  {
+    "question": "How many movies are currently in 'released' status?",
+    "sql_results": "[{\"count\": 15}]",
+    "doc_context": "",
+    "answer": "Based on the data: [{\"count\": 15}]"
+  },
+  {
+    "question": "What is the average completion rate across all watch sessions?",
+    "sql_results": "[{\"avg_pct\": 67.8}]",
+    "doc_context": "",
+    "answer": "Based on the data: [{\"avg_pct\": 67.8}]"
+  },
+  {
+    "question": "Which month has the highest watch activity?",
+    "sql_results": "[{\"month\": \"04\", \"sessions\": 1022}]",
+    "doc_context": "",
+    "answer": "Based on the data: [{\"month\": \"04\", \"sessions\": 1022}]"
+  },
+  {
+    "question": "What is the ratio of male to female viewers?",
+    "sql_results": "[{\"gender\": \"F\", \"count\": 217}, {\"gender\": \"M\", \"count\": 197}]",
+    "doc_context": "",
+    "answer": "Based on the data: [{\"gender\": \"F\", \"count\": 217}, {\"gender\": \"M\", \"count\": 197}]"
+  },
+  {
+    "question": "Which city has the most regional views?",
+    "sql_results": "[{\"city\": \"Tokyo\", \"total\": 97470.0}]",
+    "doc_context": "",
+    "answer": "Based on the data: [{\"city\": \"Tokyo\", \"total\": 97470.0}]"
+  },
+  {
+    "question": "What is the average engagement score by genre?",
+    "sql_results": "[{\"genre\": \"Action\", \"avg_score\": 69.5}, {\"genre\": \"Drama\", \"avg_score\": 69.5}, {\"genre\": \"Comedy\", \"avg_score\": 68.9}, {\"genre\": \"Sci-Fi\", \"avg_score\": 68.7}, {\"genre\": \"Thriller\", \"avg_score\": 68.5}]",
+    "doc_context": "",
+    "answer": "Based on the data: [{\"genre\": \"Action\", \"avg_score\": 69.5}, {\"genre\": \"Drama\", \"avg_score\": 69.5}, {\"genre\": \"Comedy\", \"avg_score\": 68.9}]"
+  },
+  {
+    "question": "How many viewers joined in the last 12 months?",
+    "sql_results": "[{\"count\": 238}]",
+    "doc_context": "",
+    "answer": "Based on the data: [{\"count\": 238}]"
+  },
+  {
+    "question": "What is the total number of watch sessions per genre?",
+    "sql_results": "[{\"genre\": \"Sci-Fi\", \"sessions\": 844}, {\"genre\": \"Action\", \"sessions\": 711}, {\"genre\": \"Drama\", \"sessions\": 402}, {\"genre\": \"Thriller\", \"sessions\": 342}, {\"genre\": \"Comedy\", \"sessions\": 201}]",
+    "doc_context": "",
+    "answer": "Based on the data: [{\"genre\": \"Sci-Fi\", \"sessions\": 844}, {\"genre\": \"Action\", \"sessions\": 711}, {\"genre\": \"Drama\", \"sessions\": 402}]"
+  },
+  {
+    "question": "Which movie has the longest average watch time?",
+    "sql_results": "[{\"title\": \"Iron Horizon\", \"avg_mins\": 87.9}]",
+    "doc_context": "",
+    "answer": "Based on the data: [{\"title\": \"Iron Horizon\", \"avg_mins\": 87.9}]"
+  },
+  {
+    "question": "What is the distribution of movies by release year?",
+    "sql_results": "[{\"release_year\": 2025, \"count\": 10}, {\"release_year\": 2024, \"count\": 5}]",
+    "doc_context": "",
+    "answer": "Based on the data: [{\"release_year\": 2025, \"count\": 10}, {\"release_year\": 2024, \"count\": 5}]"
+  },
+  {
+    "question": "Which genre has the best review sentiment?",
+    "sql_results": "[{\"genre\": \"Drama\", \"positive_pct\": 94.44444444444444}]",
+    "doc_context": "",
+    "answer": "Based on the data: [{\"genre\": \"Drama\", \"positive_pct\": 94.44444444444444}]"
+  },
+  {
+    "question": "What is the most common country for regional performance data?",
+    "sql_results": "[{\"country\": \"India\", \"entries\": 40}]",
+    "doc_context": "",
+    "answer": "Based on the data: [{\"country\": \"India\", \"entries\": 40}]"
+  },
+  {
+    "question": "How does the average rating compare between Comedy and Thriller?",
+    "sql_results": "[{\"genre\": \"Comedy\", \"avg\": 2.45}, {\"genre\": \"Thriller\", \"avg\": 3.9}]",
+    "doc_context": "",
+    "answer": "Based on the data: [{\"genre\": \"Comedy\", \"avg\": 2.45}, {\"genre\": \"Thriller\", \"avg\": 3.9}]"
+  },
+  {
+    "question": "Which subscription tier has the highest average age?",
+    "sql_results": "[{\"subscription_tier\": \"standard\", \"avg_age\": 41.4}]",
+    "doc_context": "",
+    "answer": "Based on the data: [{\"subscription_tier\": \"standard\", \"avg_age\": 41.4}]"
+  },
+  {
+    "question": "What is the total number of reviews with negative sentiment?",
+    "sql_results": "[{\"count\": 93}]",
+    "doc_context": "",
+    "answer": "Based on the data: [{\"count\": 93}]"
+  },
+  {
+    "question": "Which movie has the most watch sessions?",
+    "sql_results": "[{\"title\": \"Stellar Run\", \"sessions\": 440}]",
+    "doc_context": "",
+    "answer": "Based on the data: [{\"title\": \"Stellar Run\", \"sessions\": 440}]"
+  },
+  {
+    "question": "What is the average runtime of movies by genre?",
+    "sql_results": "[{\"genre\": \"Action\", \"avg_runtime\": 126.0}, {\"genre\": \"Sci-Fi\", \"avg_runtime\": 122.0}, {\"genre\": \"Thriller\", \"avg_runtime\": 112.0}, {\"genre\": \"Drama\", \"avg_runtime\": 101.0}, {\"genre\": \"Comedy\", \"avg_runtime\": 91.0}]",
+    "doc_context": "",
+    "answer": "Based on the data: [{\"genre\": \"Action\", \"avg_runtime\": 126.0}, {\"genre\": \"Sci-Fi\", \"avg_runtime\": 122.0}, {\"genre\": \"Thriller\", \"avg_runtime\": 112.0}]"
+  }
+]

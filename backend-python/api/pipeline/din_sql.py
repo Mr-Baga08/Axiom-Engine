@@ -84,10 +84,12 @@ def _call_llm(prompt: str, temperature: float = 0.2) -> str:
         except Exception as exc:
             if attempt == 2:
                 raise
-            err = str(exc).lower()
-            if "quota" in err or "rate" in err or "429" in err or "resource_exhausted" in err:
-                wait = 2 ** attempt + 1
-                logger.warning("din_sql_llm_rate_limit, retrying in %ds", wait)
+            err = str(exc)
+            if any(k in err.lower() for k in ("quota", "rate", "429", "resource_exhausted")):
+                import re as _re
+                m = _re.search(r"retry in (\d+(?:\.\d+)?)\s*s", err, _re.IGNORECASE)
+                wait = min(float(m.group(1)) if m else 65, 65)
+                logger.warning("din_sql_llm_rate_limit, retrying in %ds (attempt %d)", wait, attempt + 1)
                 time.sleep(wait)
             else:
                 raise
@@ -168,49 +170,60 @@ def din_sql(
     if schema is None:
         schema = get_schema_ddl()
 
-    # Stage 1 – Schema linking
-    linked = _call_llm(
-        _LINK_PROMPT.format(schema=schema, question=question),
-        temperature=0.1,
-    )
-    logger.debug("DIN-SQL stage 1 (linked): %s", linked)
+    # Single-shot mode: one LLM call instead of four stages.
+    # Used for non-OpenAI providers (Gemini / Anthropic) to minimise API quota.
+    # DIN_SQL_STAGES=1 env var forces the four-stage pipeline if needed.
+    provider = os.getenv("LLM_PROVIDER", "anthropic").lower()
+    use_single_shot = provider in ("gemini", "anthropic") and os.getenv("DIN_SQL_STAGES") != "4"
 
-    # Stage 2 – Query classification
-    qtype = _call_llm(
-        _CLASSIFY_PROMPT.format(linked=linked, question=question),
-        temperature=0.1,
-    ).lower().strip()
-    logger.debug("DIN-SQL stage 2 (qtype): %s", qtype)
-
-    # Normalise — LLMs sometimes return "nested query" instead of "nested"
-    if "nested" in qtype:
-        qtype = "nested"
-    elif "set" in qtype:
-        qtype = "set-operation"
+    if use_single_shot:
+        raw_sql = _call_llm(
+            f"Write a single SQL SELECT statement for the question below.\n"
+            f"Output SQL only — no explanation, no markdown, no semicolon.\n\n"
+            f"Schema:\n{schema}\n\n"
+            f"Question: {question}",
+            temperature=0,
+        )
     else:
-        qtype = "simple"
-
-    # Stage 3 – Sub-query (nested only)
-    subq = ""
-    if qtype == "nested":
-        subq = _call_llm(
-            _SUBQUERY_PROMPT.format(linked=linked, question=question),
+        # Four-stage DIN-SQL pipeline (default for OpenAI)
+        linked = _call_llm(
+            _LINK_PROMPT.format(schema=schema, question=question),
             temperature=0.1,
         )
-        logger.debug("DIN-SQL stage 3 (subquery): %s", subq)
+        logger.debug("DIN-SQL stage 1 (linked): %s", linked)
 
-    subquery_hint = f"Inner subquery:\n{subq}\n" if subq else ""
+        qtype = _call_llm(
+            _CLASSIFY_PROMPT.format(linked=linked, question=question),
+            temperature=0.1,
+        ).lower().strip()
+        logger.debug("DIN-SQL stage 2 (qtype): %s", qtype)
 
-    # Stage 4 – Final SQL assembly (temperature=0 for determinism)
-    raw_sql = _call_llm(
-        _FINAL_SQL_PROMPT.format(
-            linked=linked,
-            qtype=qtype,
-            subquery_hint=subquery_hint,
-            question=question,
-        ),
-        temperature=0,
-    )
+        if "nested" in qtype:
+            qtype = "nested"
+        elif "set" in qtype:
+            qtype = "set-operation"
+        else:
+            qtype = "simple"
+
+        subq = ""
+        if qtype == "nested":
+            subq = _call_llm(
+                _SUBQUERY_PROMPT.format(linked=linked, question=question),
+                temperature=0.1,
+            )
+            logger.debug("DIN-SQL stage 3 (subquery): %s", subq)
+
+        subquery_hint = f"Inner subquery:\n{subq}\n" if subq else ""
+
+        raw_sql = _call_llm(
+            _FINAL_SQL_PROMPT.format(
+                linked=linked,
+                qtype=qtype,
+                subquery_hint=subquery_hint,
+                question=question,
+            ),
+            temperature=0,
+        )
     logger.debug("DIN-SQL stage 4 (raw sql): %s", raw_sql)
 
     # Guard before returning

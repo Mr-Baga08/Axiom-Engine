@@ -48,11 +48,23 @@ def get_client():
 
     try:
         from langfuse import Langfuse
-        _client = Langfuse(
+        candidate = Langfuse(
             public_key=public_key,
             secret_key=secret_key,
             host=host,
         )
+        # Langfuse v3 removed .span()/.trace() — the observe.py decorator
+        # requires these methods. Return None so tracing is silently disabled
+        # rather than crashing the agent.
+        if not hasattr(candidate, "span"):
+            logger.warning(
+                "Langfuse client does not support .span() (v3 SDK detected). "
+                "Low-level tracing disabled — upgrade to langfuse<3 or switch "
+                "to the @langfuse.observe decorator to re-enable."
+            )
+            _client = _SENTINEL
+            return None
+        _client = candidate
         logger.info("LangFuse client initialised (host=%s)", host)
         return _client
     except Exception as exc:
@@ -105,16 +117,21 @@ def register_prompts() -> None:
     if lf is None:
         return
 
+    create_fn = getattr(lf, "create_prompt", None)
+    if create_fn is None:
+        logger.info("LangFuse.create_prompt not available (v3 SDK) — skipping prompt sync")
+        return
+
     for prompt_name, prompt_text in _PROMPT_REGISTRY.items():
         try:
-            lf.create_prompt(
+            create_fn(
                 name=prompt_name,
                 prompt=prompt_text,
                 labels=["production"],
             )
             logger.debug("Registered prompt: %s", prompt_name)
         except Exception as exc:
-            # Prompt may already exist — this is expected after first run
+            # Prompt may already exist — expected after first run
             logger.debug("Prompt registration for %r: %s", prompt_name, exc)
 
     logger.info("LangFuse prompt registry sync complete (%d prompts)", len(_PROMPT_REGISTRY))
@@ -157,7 +174,12 @@ def create_trace(
     if lf is None:
         return None
     try:
-        return lf.trace(
+        # Langfuse v3 removed .trace()/.span() in favour of @observe decorators.
+        # Try the v2 API; silently return None if the method is missing.
+        trace_fn = getattr(lf, "trace", None)
+        if trace_fn is None:
+            return None
+        return trace_fn(
             id=trace_id,
             name=name,
             user_id=user_uid,

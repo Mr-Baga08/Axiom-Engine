@@ -78,29 +78,41 @@ def observe(
                 lf = _get_langfuse() if ctx.sampled else None
 
                 if lf is None:
-                    # Not sampled or LangFuse unavailable — run unwrapped
                     return await func(*args, **kwargs)
 
-                span = lf.span(
-                    name=span_name,
-                    trace_id=ctx.trace_id,
-                    tags=(tags or []) + [f"role:{ctx.role}"],
-                    input=_safe_input(args, kwargs) if capture_input else None,
-                )
+                # Gracefully handle Langfuse API version differences.
+                # v3 dropped .span()/.trace() in favour of @observe decorators.
+                # If span creation fails for any reason, run the function unwrapped.
+                try:
+                    span = lf.span(
+                        name=span_name,
+                        trace_id=ctx.trace_id,
+                        tags=(tags or []) + [f"role:{ctx.role}"],
+                        input=_safe_input(args, kwargs) if capture_input else None,
+                    )
+                except Exception:
+                    return await func(*args, **kwargs)
+
                 start = time.perf_counter()
                 try:
                     result = await func(*args, **kwargs)
-                    span.end(
-                        output=_safe_output(result) if capture_output else None,
-                        metadata={"latency_ms": round((time.perf_counter() - start) * 1000)},
-                    )
+                    try:
+                        span.end(
+                            output=_safe_output(result) if capture_output else None,
+                            metadata={"latency_ms": round((time.perf_counter() - start) * 1000)},
+                        )
+                    except Exception:
+                        pass
                     return result
                 except Exception as exc:
-                    span.end(
-                        level="ERROR",
-                        status_message=str(exc),
-                        metadata={"latency_ms": round((time.perf_counter() - start) * 1000)},
-                    )
+                    try:
+                        span.end(
+                            level="ERROR",
+                            status_message=str(exc),
+                            metadata={"latency_ms": round((time.perf_counter() - start) * 1000)},
+                        )
+                    except Exception:
+                        pass
                     raise
             return async_wrapper
 
@@ -113,22 +125,32 @@ def observe(
                 if lf is None:
                     return func(*args, **kwargs)
 
-                span = lf.span(
-                    name=span_name,
-                    trace_id=ctx.trace_id,
-                    tags=(tags or []) + [f"role:{ctx.role}"],
-                    input=_safe_input(args, kwargs) if capture_input else None,
-                )
+                try:
+                    span = lf.span(
+                        name=span_name,
+                        trace_id=ctx.trace_id,
+                        tags=(tags or []) + [f"role:{ctx.role}"],
+                        input=_safe_input(args, kwargs) if capture_input else None,
+                    )
+                except Exception:
+                    return func(*args, **kwargs)
+
                 start = time.perf_counter()
                 try:
                     result = func(*args, **kwargs)
-                    span.end(
-                        output=_safe_output(result) if capture_output else None,
-                        metadata={"latency_ms": round((time.perf_counter() - start) * 1000)},
-                    )
+                    try:
+                        span.end(
+                            output=_safe_output(result) if capture_output else None,
+                            metadata={"latency_ms": round((time.perf_counter() - start) * 1000)},
+                        )
+                    except Exception:
+                        pass
                     return result
                 except Exception as exc:
-                    span.end(level="ERROR", status_message=str(exc))
+                    try:
+                        span.end(level="ERROR", status_message=str(exc))
+                    except Exception:
+                        pass
                     raise
             return sync_wrapper
 

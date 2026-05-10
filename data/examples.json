@@ -1,0 +1,308 @@
+[
+  {
+    "question": "Which genre had the highest revenue in 2025?",
+    "sql_results": "[{\"genre\":\"Action\",\"total_revenue\":185000000}]",
+    "doc_context": "Q4 2025 industry report: Action films dominated box office with strong franchise performance, accounting for 32% of total theatrical revenue.",
+    "answer": "Action genre had the highest revenue in 2025 with $185M, driven by franchise sequels and strong opening weekends."
+  },
+  {
+    "question": "Which genre performed best in 2025 by total box office revenue?",
+    "sql_results": "[{\"genre\":\"Action\",\"total_revenue\":185000000},{\"genre\":\"Drama\",\"total_revenue\":142000000}]",
+    "doc_context": "Industry analysts attribute Action film dominance to increased VFX budgets and expanded international distribution in Asia-Pacific markets.",
+    "answer": "Action was the top-performing genre in 2025 at $185M, followed by Drama at $142M."
+  },
+  {
+    "question": "What was the top earning genre last year?",
+    "sql_results": "[{\"genre\":\"Action\",\"revenue_rank\":1,\"total_revenue\":185000000}]",
+    "doc_context": "The 2025 box office recovery was led by tentpole Action releases that benefited from post-pandemic audience return to cinemas.",
+    "answer": "Action was the highest earning genre, generating $185M in total revenue in 2025."
+  },
+  {
+    "question": "Show me a trend of viewer engagement for Sci-Fi over 2024.",
+    "sql_results": "[{\"month\":\"2024-01\",\"avg_watch_time\":98},{\"month\":\"2024-06\",\"avg_watch_time\":112},{\"month\":\"2024-12\",\"avg_watch_time\":127}]",
+    "doc_context": "Sci-Fi viewership grew steadily through 2024, boosted by several high-profile streaming releases and renewed interest in hard science fiction following the success of Stellar Run.",
+    "answer": "Sci-Fi viewer engagement grew from 98 to 127 average minutes per session over 2024, a 30% increase driven by streaming exclusives."
+  },
+  {
+    "question": "How did Sci-Fi viewership change throughout 2024?",
+    "sql_results": "[{\"quarter\":\"Q1\",\"viewers\":48000},{\"quarter\":\"Q2\",\"viewers\":52000},{\"quarter\":\"Q3\",\"viewers\":61000},{\"quarter\":\"Q4\",\"viewers\":74000}]",
+    "doc_context": "Streaming platforms invested heavily in Sci-Fi originals in H2 2024, resulting in a 54% year-over-year viewership increase for the genre.",
+    "answer": "Sci-Fi viewership increased from 48,000 in Q1 to 74,000 in Q4 2024, a 54% annual growth fuelled by new streaming originals."
+  },
+  {
+    "question": "Plot viewer engagement trends for Science Fiction in 2024.",
+    "sql_results": "[{\"month\":\"Jan\",\"completions\":0.71},{\"month\":\"Jun\",\"completions\":0.78},{\"month\":\"Dec\",\"completions\":0.84}]",
+    "doc_context": "Completion rates for Sci-Fi titles improved throughout 2024 as platforms refined their recommendation algorithms to surface relevant content to high-intent viewers.",
+    "answer": "Sci-Fi completion rates rose from 71% in January to 84% in December 2024, indicating growing viewer satisfaction with the genre."
+  },
+  {
+    "question": "Why is Stellar Run trending?",
+    "sql_results": "[]",
+    "doc_context": "Stellar Run (2024) achieved viral status through its scientifically accurate portrayal of near-future space travel. Social media discussion spiked after the film's depiction of orbital mechanics was endorsed by NASA. The film also benefited from a grassroots marketing campaign and word-of-mouth driven by its surprise theatrical ending.",
+    "answer": "Stellar Run is trending because of its scientifically accurate space travel depiction endorsed by NASA, a surprise theatrical ending that drove word-of-mouth, and a viral social media campaign."
+  },
+  {
+    "question": "What factors contributed to Stellar Run's popularity?",
+    "sql_results": "[{\"title\":\"Stellar Run\",\"rating\":8.9,\"viewer_count\":340000}]",
+    "doc_context": "Stellar Run earned an 8.9 viewer rating and 340,000 completions. Industry reports cite the film's authentic science, ensemble cast, and strategic release timing during the summer blockbuster window as key success factors.",
+    "answer": "Stellar Run's popularity stems from its 8.9 rating, authentic science, strong ensemble cast, and optimal summer release timing that captured the blockbuster audience."
+  },
+  {
+    "question": "Explain the success of Stellar Run.",
+    "sql_results": "[{\"title\":\"Stellar Run\",\"revenue_usd\":89000000,\"budget_usd\":42000000}]",
+    "doc_context": "Stellar Run generated $89M on a $42M budget (2.1x return). Marketing focused on scientific credibility rather than spectacle. Preview screenings at universities and science festivals created an enthusiastic core audience.",
+    "answer": "Stellar Run succeeded commercially with $89M revenue on a $42M budget (2.1× ROI) by targeting science-enthusiast audiences through university screenings and credibility-focused marketing."
+  },
+  {
+    "question": "Compute YoY growth of total revenue.",
+    "sql_results": "[{\"year\":2024,\"total_revenue\":520000000},{\"year\":2025,\"total_revenue\":631000000}]",
+    "doc_context": "The entertainment sector recovered strongly in 2025 after supply chain disruptions in content production eased. Total industry revenue grew across theatrical, streaming, and digital segments.",
+    "answer": "Total revenue grew from $520M in 2024 to $631M in 2025, a year-over-year growth rate of 21.3%."
+  },
+  {
+    "question": "What is the year-over-year revenue growth rate?",
+    "sql_results": "[{\"year\":2023,\"revenue\":487000000},{\"year\":2024,\"revenue\":520000000},{\"year\":2025,\"revenue\":631000000}]",
+    "doc_context": "Revenue growth accelerated in 2025 compared to the modest 6.8% growth seen from 2023 to 2024, reflecting market recovery and increased content investment.",
+    "answer": "YoY revenue growth was 6.8% from 2023 to 2024, accelerating to 21.3% from 2024 to 2025 as market conditions improved."
+  },
+  {
+    "question": "Calculate the annual growth in box office revenue.",
+    "sql_results": "[{\"year\":2024,\"box_office\":310000000},{\"year\":2025,\"box_office\":374000000}]",
+    "doc_context": "Box office recovery in 2025 was driven by a return to multi-film franchises and premium large-format screenings capturing higher ticket prices.",
+    "answer": "Box office revenue grew from $310M in 2024 to $374M in 2025, representing 20.6% annual growth."
+  },
+  {
+    "question": "Generate a chart of regional performance.",
+    "sql_results": "[{\"region\":\"North America\",\"revenue\":245000000},{\"region\":\"Europe\",\"revenue\":187000000},{\"region\":\"Asia-Pacific\",\"revenue\":143000000},{\"region\":\"Latin America\",\"revenue\":56000000}]",
+    "doc_context": "Asia-Pacific showed the highest growth rate at 34% YoY despite being the third-largest absolute market. North America remains the largest revenue contributor.",
+    "answer": "North America leads with $245M, followed by Europe ($187M), Asia-Pacific ($143M), and Latin America ($56M). Asia-Pacific showed the highest 34% growth rate."
+  },
+  {
+    "question": "Create a visualization of revenue by region.",
+    "sql_results": "[{\"region\":\"North America\",\"revenue_usd\":245000000},{\"region\":\"Europe\",\"revenue_usd\":187000000},{\"region\":\"Asia-Pacific\",\"revenue_usd\":143000000}]",
+    "doc_context": "Regional revenue data for 2025 reflects expanded distribution agreements and localized content strategies in key growth markets.",
+    "answer": "A bar chart of 2025 regional revenue shows North America ($245M), Europe ($187M), and Asia-Pacific ($143M) as the top three markets."
+  },
+  {
+    "question": "Show regional revenue as a bar chart.",
+    "sql_results": "[{\"region\":\"APAC\",\"revenue\":143000000},{\"region\":\"EMEA\",\"revenue\":187000000},{\"region\":\"AMER\",\"revenue\":301000000}]",
+    "doc_context": "AMER dominates total revenue but APAC is the fastest-growing region, expected to surpass EMEA by 2027 based on current trajectory.",
+    "answer": "AMER leads revenue at $301M, followed by EMEA at $187M and APAC at $143M. APAC is the fastest growing at 34% YoY."
+  },
+  {
+    "question": "Summarise the marketing spend impact on top-performing movies.",
+    "sql_results": "[{\"title\":\"Iron Galaxy\",\"marketing_spend\":28000000,\"revenue\":156000000},{\"title\":\"Stellar Run\",\"marketing_spend\":12000000,\"revenue\":89000000}]",
+    "doc_context": "Top-performing films in 2025 achieved an average marketing ROI of 4.2x. Iron Galaxy's broad digital campaign drove 65% of opening weekend ticket sales online. Stellar Run's niche-targeted marketing outperformed its budget class.",
+    "answer": "Iron Galaxy spent $28M in marketing to generate $156M revenue (5.6x ROI). Stellar Run's $12M spend yielded $89M (7.4x ROI), demonstrating that targeted marketing can outperform broad campaigns."
+  },
+  {
+    "question": "How does marketing budget correlate with box office performance?",
+    "sql_results": "[{\"marketing_quartile\":\"Q4\",\"avg_revenue\":142000000},{\"marketing_quartile\":\"Q3\",\"avg_revenue\":88000000},{\"marketing_quartile\":\"Q2\",\"avg_revenue\":51000000},{\"marketing_quartile\":\"Q1\",\"avg_revenue\":23000000}]",
+    "doc_context": "Regression analysis shows a 0.73 correlation between marketing spend and box office revenue, but diminishing returns above $25M in marketing investment.",
+    "answer": "Marketing spend correlates positively with revenue (r=0.73). The top marketing quartile averaged $142M in box office vs $23M for the bottom quartile, but returns diminish above $25M spend."
+  },
+  {
+    "question": "What is the ROI of marketing spend for top movies?",
+    "sql_results": "[{\"title\":\"Iron Galaxy\",\"roi\":5.57},{\"title\":\"Stellar Run\",\"roi\":7.42},{\"title\":\"Dark Horizon\",\"roi\":3.18}]",
+    "doc_context": "Marketing ROI varied significantly by genre and targeting approach. Films with precision-targeted digital campaigns consistently outperformed those using traditional broadcast strategies.",
+    "answer": "Top film marketing ROIs: Stellar Run led at 7.4x, Iron Galaxy at 5.6x, Dark Horizon at 3.2x. Digitally targeted campaigns outperformed broadcast strategies."
+  },
+  {
+    "question": "Which movies had the highest viewer ratings in 2025?",
+    "sql_results": "[{\"title\":\"Stellar Run\",\"avg_rating\":8.9},{\"title\":\"The Quiet Ocean\",\"avg_rating\":8.7},{\"title\":\"Iron Galaxy\",\"avg_rating\":8.4}]",
+    "doc_context": "Critical acclaim and audience ratings diverged in 2025. Stellar Run achieved both critical (Rotten Tomatoes 94%) and audience approval (8.9/10), a rare combination in modern blockbusters.",
+    "answer": "Top-rated films in 2025: Stellar Run (8.9), The Quiet Ocean (8.7), Iron Galaxy (8.4). Stellar Run achieved both critical acclaim (94% RT) and audience approval."
+  },
+  {
+    "question": "What is the average revenue per viewer for Drama films?",
+    "sql_results": "[{\"genre\":\"Drama\",\"total_revenue\":142000000,\"total_viewers\":2840000}]",
+    "doc_context": "Drama films typically attract a more dedicated audience segment willing to pay premium prices for theatrical experiences, leading to higher revenue-per-viewer metrics.",
+    "answer": "Drama films generated $142M from 2.84M viewers, averaging $50 revenue per viewer — 18% above the industry average of $42."
+  },
+  {
+    "question": "How many viewers watched Action movies in Q1 2025?",
+    "sql_results": "[{\"genre\":\"Action\",\"quarter\":\"Q1\",\"viewer_count\":890000}]",
+    "doc_context": "Q1 2025 Action viewership was boosted by two major franchise releases in January and February that combined for $67M in opening weekend box office.",
+    "answer": "890,000 viewers watched Action movies in Q1 2025, boosted by two major franchise openings generating $67M in combined opening weekends."
+  },
+  {
+    "question": "What are the top 5 movies by revenue in 2025?",
+    "sql_results": "[{\"rank\":1,\"title\":\"Iron Galaxy\",\"revenue\":156000000},{\"rank\":2,\"title\":\"Dark Horizon\",\"revenue\":134000000},{\"rank\":3,\"title\":\"The Quiet Ocean\",\"revenue\":112000000},{\"rank\":4,\"title\":\"Stellar Run\",\"revenue\":89000000},{\"rank\":5,\"title\":\"Crimson Tide 2\",\"revenue\":78000000}]",
+    "doc_context": "The 2025 top 5 were dominated by sequels and franchise extensions, with Stellar Run being the only original IP in the top tier.",
+    "answer": "Top 5 films by 2025 revenue: Iron Galaxy ($156M), Dark Horizon ($134M), The Quiet Ocean ($112M), Stellar Run ($89M), Crimson Tide 2 ($78M)."
+  },
+  {
+    "question": "Compare the performance of Action vs Drama genres.",
+    "sql_results": "[{\"genre\":\"Action\",\"revenue\":185000000,\"viewers\":3700000,\"avg_rating\":7.8},{\"genre\":\"Drama\",\"revenue\":142000000,\"viewers\":2840000,\"avg_rating\":8.3}]",
+    "doc_context": "While Action leads in raw revenue, Drama films consistently score higher audience ratings and achieve better word-of-mouth retention, suggesting stronger long-tail streaming performance.",
+    "answer": "Action leads revenue ($185M vs $142M) and viewership (3.7M vs 2.84M), but Drama outperforms on quality (8.3 vs 7.8 rating) and streaming longevity."
+  },
+  {
+    "question": "What percentage of viewers completed Sci-Fi films?",
+    "sql_results": "[{\"genre\":\"Sci-Fi\",\"total_starts\":610000,\"total_completions\":494000}]",
+    "doc_context": "Sci-Fi completion rates improved from 74% in 2023 to 81% in 2025, reflecting better content curation and shorter average runtimes in new releases.",
+    "answer": "81% of viewers who started Sci-Fi films in 2025 completed them (494K of 610K starts), up from 74% in 2023."
+  },
+  {
+    "question": "Show me the watch duration distribution for Horror movies.",
+    "sql_results": "[{\"bucket\":\"<30min\",\"count\":12000},{\"bucket\":\"30-60min\",\"count\":34000},{\"bucket\":\"60-90min\",\"count\":87000},{\"bucket\":\"90min+\",\"count\":145000}]",
+    "doc_context": "Horror films showed a bimodal engagement pattern: early dropouts in the first 30 minutes and strong completions for viewers who passed the 60-minute mark, consistent with genre tension-building structures.",
+    "answer": "Most Horror viewers (145K) watch over 90 minutes. Early dropout is common (12K leave before 30min), but those passing 60 minutes typically complete the film."
+  },
+  {
+    "question": "Which region had the highest total revenue?",
+    "sql_results": "[{\"region\":\"North America\",\"revenue\":245000000}]",
+    "doc_context": "North America maintained its position as the largest single market in 2025, though its share of global revenue declined from 44% to 39% as international markets grew faster.",
+    "answer": "North America had the highest total revenue at $245M in 2025, though its global market share declined from 44% to 39% as APAC markets grew faster."
+  },
+  {
+    "question": "What is the subscriber-to-viewer conversion rate?",
+    "sql_results": "[{\"tier\":\"Premium\",\"subscribers\":420000,\"active_viewers\":378000},{\"tier\":\"Standard\",\"subscribers\":890000,\"active_viewers\":623000}]",
+    "doc_context": "Premium subscribers show consistently higher engagement rates due to curated content libraries and early access to new releases.",
+    "answer": "Premium tier: 90% conversion (378K of 420K subscribers active). Standard tier: 70% conversion (623K of 890K active). Premium subscribers are significantly more engaged."
+  },
+  {
+    "question": "How did streaming viewership change from 2023 to 2024?",
+    "sql_results": "[{\"year\":2023,\"streaming_viewers\":1840000},{\"year\":2024,\"streaming_viewers\":2340000}]",
+    "doc_context": "Streaming viewership grew 27% year-over-year from 2023 to 2024, accelerated by the rollout of password-sharing restrictions that drove new account creation.",
+    "answer": "Streaming viewership grew 27% from 1.84M in 2023 to 2.34M in 2024, driven partly by password-sharing policy changes that converted household sharers to individual subscribers."
+  },
+  {
+    "question": "What were the key trends in the 2024 entertainment industry?",
+    "sql_results": "[]",
+    "doc_context": "Key 2024 trends: (1) Streaming consolidation accelerated with three major mergers. (2) AI-assisted production reduced post-production costs by 15-20%. (3) Live events and theatrical premiums drove higher per-capita spend. (4) Genre diversity increased with mid-budget films finding success outside blockbuster formula.",
+    "answer": "Key 2024 trends included streaming consolidation (three major mergers), AI-assisted production (15-20% cost reduction), theatrical premium growth, and mid-budget film success outside the blockbuster formula."
+  },
+  {
+    "question": "Explain the decline of physical media revenues.",
+    "sql_results": "[{\"year\":2023,\"physical_revenue\":8200000},{\"year\":2024,\"physical_revenue\":5900000},{\"year\":2025,\"physical_revenue\":4100000}]",
+    "doc_context": "Physical media (DVD/Blu-ray) continued its multi-year decline, falling 50% over two years. The decline accelerated as streaming libraries deepened and consumer electronics shifted away from optical disc drives. Collector editions maintain a niche premium segment.",
+    "answer": "Physical media revenue declined from $8.2M (2023) to $4.1M (2025), a 50% drop in two years as streaming depth improved and consumer hardware moved away from optical drives."
+  },
+  {
+    "question": "What marketing channels drove the most engagement?",
+    "sql_results": "[{\"channel\":\"Social Media\",\"engagement_rate\":0.084},{\"channel\":\"Streaming Ads\",\"engagement_rate\":0.062},{\"channel\":\"TV Spots\",\"engagement_rate\":0.031},{\"channel\":\"Outdoor\",\"engagement_rate\":0.018}]",
+    "doc_context": "Digital channels drove the majority of measurable engagement in 2025. Social media campaigns with creator partnerships achieved 8.4% engagement rates, significantly outperforming traditional TV spots.",
+    "answer": "Social media led with 8.4% engagement rate, followed by streaming ads (6.2%), TV spots (3.1%), and outdoor (1.8%). Creator partnerships amplified social performance significantly."
+  },
+  {
+    "question": "Calculate the cost per acquisition for each marketing channel.",
+    "sql_results": "[{\"channel\":\"Social Media\",\"spend\":4200000,\"new_viewers\":420000},{\"channel\":\"TV Spots\",\"spend\":8900000,\"new_viewers\":267000}]",
+    "doc_context": "Cost-per-acquisition analysis reveals social media is nearly 4x more efficient than traditional TV advertising for acquiring new viewers in the 18-34 demographic.",
+    "answer": "Social media CPA: $10/viewer ($4.2M / 420K). TV spots CPA: $33/viewer ($8.9M / 267K). Social media is 3.3x more efficient at new viewer acquisition."
+  },
+  {
+    "question": "Which subscription tier has the highest retention rate?",
+    "sql_results": "[{\"tier\":\"Premium\",\"12mo_retention\":0.87},{\"tier\":\"Standard\",\"12mo_retention\":0.71},{\"tier\":\"Basic\",\"12mo_retention\":0.54}]",
+    "doc_context": "Premium tier subscribers showed highest loyalty, largely due to exclusive early access to theatrical releases and ad-free experience. Basic tier churn was primarily driven by price sensitivity and competing free services.",
+    "answer": "Premium tier has the highest 12-month retention at 87%, vs 71% for Standard and 54% for Basic. Premium benefits (early access, ad-free) drive superior loyalty."
+  },
+  {
+    "question": "Show me monthly revenue trends for 2025.",
+    "sql_results": "[{\"month\":\"2025-01\",\"revenue\":48000000},{\"month\":\"2025-06\",\"revenue\":62000000},{\"month\":\"2025-12\",\"revenue\":71000000}]",
+    "doc_context": "2025 revenue showed strong seasonal patterns with January driven by awards-season releases, a summer peak in June-August, and a December holiday rush, consistent with historical theatrical patterns.",
+    "answer": "Monthly revenue grew from $48M in January to $71M in December 2025, with a summer peak in June at $62M. Seasonal patterns driven by awards season, summer blockbusters, and holiday releases."
+  },
+  {
+    "question": "What is the average rating for Thriller movies?",
+    "sql_results": "[{\"genre\":\"Thriller\",\"avg_rating\":7.6,\"film_count\":23}]",
+    "doc_context": "Thriller films received average audience ratings of 7.6/10 in 2025, slightly below the cross-genre average of 7.8, though critical reception was comparably strong.",
+    "answer": "Thriller movies averaged a 7.6/10 audience rating across 23 films in 2025, just below the industry average of 7.8."
+  },
+  {
+    "question": "How many movies were released per genre in 2025?",
+    "sql_results": "[{\"genre\":\"Drama\",\"releases\":42},{\"genre\":\"Action\",\"releases\":31},{\"genre\":\"Comedy\",\"releases\":29},{\"genre\":\"Sci-Fi\",\"releases\":18},{\"genre\":\"Horror\",\"releases\":24}]",
+    "doc_context": "Drama remained the most produced genre in 2025, but action films commanded larger individual budgets. Sci-Fi releases were fewest but commanded higher average production values.",
+    "answer": "2025 releases by genre: Drama (42), Action (31), Comedy (29), Horror (24), Sci-Fi (18). Drama leads volume but Action commands larger budgets per film."
+  },
+  {
+    "question": "What is the total marketing spend for top grossing films?",
+    "sql_results": "[{\"title\":\"Iron Galaxy\",\"marketing_spend\":28000000},{\"title\":\"Dark Horizon\",\"marketing_spend\":22000000},{\"title\":\"The Quiet Ocean\",\"marketing_spend\":19000000}]",
+    "doc_context": "The top three grossing films collectively spent $69M on marketing, representing approximately 20% of their combined box office revenue — in line with industry benchmarks of 15-25%.",
+    "answer": "Combined marketing spend for top 3 grossing films: $69M ($28M Iron Galaxy, $22M Dark Horizon, $19M The Quiet Ocean), averaging 20% of combined revenue."
+  },
+  {
+    "question": "Which viewers watched the most movies in 2024?",
+    "sql_results": "[{\"viewer_id\":1042,\"name\":\"Premium\",\"movies_watched\":47},{\"viewer_id\":2891,\"name\":\"Premium\",\"movies_watched\":43}]",
+    "doc_context": "Heavy viewers (watching 40+ films per year) represent less than 2% of the subscriber base but account for 14% of total platform engagement minutes.",
+    "answer": "The most active viewer watched 47 films in 2024. Heavy viewers (40+/year) are <2% of subscribers but drive 14% of engagement minutes, primarily in the Premium tier."
+  },
+  {
+    "question": "What is the completion rate for movies over 2 hours?",
+    "sql_results": "[{\"runtime_bucket\":\">120min\",\"completion_rate\":0.73},{\"runtime_bucket\":\"90-120min\",\"completion_rate\":0.84}]",
+    "doc_context": "Longer films face higher dropout risk. Films exceeding 2 hours had a 73% completion rate vs 84% for 90-120 minute films, with most dropouts occurring at the 75-90 minute mark.",
+    "answer": "Films over 2 hours have a 73% completion rate, vs 84% for 90-120 minute films. Most dropouts on long films occur at the 75-90 minute mark."
+  },
+  {
+    "question": "How does viewer age correlate with genre preference?",
+    "sql_results": "[{\"age_group\":\"18-25\",\"top_genre\":\"Action\"},{\"age_group\":\"26-40\",\"top_genre\":\"Sci-Fi\"},{\"age_group\":\"41-60\",\"top_genre\":\"Drama\"}]",
+    "doc_context": "Age-based genre segmentation reveals clear patterns: younger viewers prefer spectacle-heavy Action, working-age audiences lean toward intellectually stimulating Sci-Fi, and older demographics favour character-driven Drama.",
+    "answer": "18-25 year-olds prefer Action, 26-40 prefer Sci-Fi, and 41-60 prefer Drama. These patterns are consistent across streaming and theatrical platforms."
+  },
+  {
+    "question": "Generate a pie chart of genre market share.",
+    "sql_results": "[{\"genre\":\"Action\",\"share\":0.29},{\"genre\":\"Drama\",\"share\":0.22},{\"genre\":\"Comedy\",\"share\":0.18},{\"genre\":\"Sci-Fi\",\"share\":0.14},{\"genre\":\"Horror\",\"share\":0.10},{\"genre\":\"Other\",\"share\":0.07}]",
+    "doc_context": "Genre market share has shifted toward more diverse content in 2025, with Action's share declining from 35% in 2022 as streaming platforms invested in varied content for different audience segments.",
+    "answer": "2025 genre market share: Action 29%, Drama 22%, Comedy 18%, Sci-Fi 14%, Horror 10%, Other 7%. Action's share declined from 35% in 2022 as streaming diversified."
+  },
+  {
+    "question": "What was the box office opening weekend for the top movie?",
+    "sql_results": "[{\"title\":\"Iron Galaxy\",\"opening_weekend_usd\":67000000}]",
+    "doc_context": "Iron Galaxy's $67M opening weekend was the largest of 2025, driven by pre-sales starting 6 weeks prior and a record-breaking IMAX rollout across 2,400 screens.",
+    "answer": "Iron Galaxy had the highest opening weekend of 2025 at $67M, supported by strong pre-sales and a record IMAX rollout on 2,400 screens."
+  },
+  {
+    "question": "Compare streaming vs theatrical revenue trends.",
+    "sql_results": "[{\"year\":2023,\"theatrical\":295000000,\"streaming\":192000000},{\"year\":2024,\"theatrical\":310000000,\"streaming\":243000000},{\"year\":2025,\"theatrical\":374000000,\"streaming\":298000000}]",
+    "doc_context": "Both theatrical and streaming revenues are growing, but streaming is growing faster. At current trajectories, streaming revenue will surpass theatrical by 2027. The divide between the two channels is narrowing as studios release films simultaneously or with 30-day exclusivity windows.",
+    "answer": "Theatrical grew from $295M to $374M (27% over 2 years) while streaming grew from $192M to $298M (55%). Streaming will likely surpass theatrical by 2027 at current rates."
+  },
+  {
+    "question": "What content types generated the highest marketing ROI?",
+    "sql_results": "[{\"content_type\":\"Original IP\",\"avg_roi\":6.8},{\"content_type\":\"Sequel/Franchise\",\"avg_roi\":4.2},{\"content_type\":\"Adaptation\",\"avg_roi\":5.1}]",
+    "doc_context": "Original IP films, despite requiring larger awareness budgets, achieved higher ROI when successful because they do not share revenue with IP holders. Franchise films offer more predictable but lower returns due to audience saturation risk.",
+    "answer": "Original IP generated the highest marketing ROI at 6.8x, followed by adaptations (5.1x) and franchise sequels (4.2x). Originals carry more risk but deliver better returns when executed well."
+  },
+  {
+    "question": "Describe the growth strategy that worked best in 2024.",
+    "sql_results": "[]",
+    "doc_context": "The most successful growth strategy in 2024 combined three elements: (1) Platform exclusivity windows of 45-60 days before theatrical release, creating scarcity. (2) Creator economy partnerships with filmmakers who built audiences independent of studio infrastructure. (3) International co-production agreements that enabled access to Asian talent and distribution networks at reduced cost.",
+    "answer": "The most effective 2024 growth strategy combined 45-60 day theatrical exclusivity windows, creator economy partnerships for authentic audience building, and international co-production agreements for cost-effective global reach."
+  },
+  {
+    "question": "Calculate the break-even budget for an average film.",
+    "sql_results": "[{\"avg_budget\":34000000,\"avg_marketing_spend\":9200000,\"avg_revenue\":52000000}]",
+    "doc_context": "Industry standard assumes 2x production budget as minimum break-even when including P&A costs. The average film in 2025 needed $34M in production plus $9.2M in marketing, requiring $86.4M in revenue to break even accounting for exhibitor splits (typically 45-50% of box office).",
+    "answer": "Average film requires $34M production + $9.2M marketing = $43.2M total cost. At 50% exhibitor split, break-even requires ~$86M box office. The average film at $52M revenue does not break even theatrically, relying on ancillary markets."
+  },
+  {
+    "question": "What is the total lifetime value of a premium subscriber?",
+    "sql_results": "[{\"tier\":\"Premium\",\"avg_monthly_revenue\":18.99,\"avg_tenure_months\":38,\"churn_rate\":0.087}]",
+    "doc_context": "Premium subscribers generate $18.99/month and stay for an average of 38 months before churning. Acquisition cost averages $24 per Premium subscriber through targeted digital campaigns.",
+    "answer": "Premium subscriber LTV: $18.99/month × 38 months = $721.62 gross LTV. After $24 acquisition cost and 8.7% annual churn, net LTV is approximately $697 per subscriber."
+  },
+  {
+    "question": "What is the average rating for Sci-Fi movies in 2025?",
+    "sql_results": "[{\"genre\":\"Sci-Fi\",\"year\":2025,\"avg_rating\":8.1,\"film_count\":18}]",
+    "doc_context": "Sci-Fi films maintained the highest average audience rating of any genre in 2025, building on the critical success of Stellar Run and a wave of thoughtful, science-accurate releases.",
+    "answer": "Sci-Fi films averaged 8.1/10 in 2025 across 18 releases — the highest of any genre — driven by a wave of science-accurate productions following Stellar Run's success."
+  },
+  {
+    "question": "How many Premium subscribers joined in Q4 2025?",
+    "sql_results": "[{\"tier\":\"Premium\",\"quarter\":\"Q4_2025\",\"new_subscribers\":89000}]",
+    "doc_context": "Q4 2025 Premium subscriber growth was boosted by a holiday promotional bundle and the exclusive release of two anticipated sequels on the platform before theatrical.",
+    "answer": "89,000 new Premium subscribers joined in Q4 2025, driven by a holiday promotional bundle and two exclusive pre-theatrical releases."
+  },
+  {
+    "question": "What is the total watch time for all content in 2025?",
+    "sql_results": "[{\"year\":2025,\"total_watch_hours\":48700000}]",
+    "doc_context": "Total platform watch time reached 48.7M hours in 2025, a 24% increase over 2024. The growth was concentrated in evening and weekend viewing windows, with mobile accounting for 38% of total hours.",
+    "answer": "Total platform watch time reached 48.7M hours in 2025 (+24% YoY). Evening/weekend viewing dominates, with mobile at 38% of total hours."
+  },
+  {
+    "question": "Which horror film had the highest completion rate in 2025?",
+    "sql_results": "[{\"title\":\"The Abandoned\",\"completion_rate\":0.89,\"genre\":\"Horror\"}]",
+    "doc_context": "The Abandoned achieved the highest horror completion rate at 89%, unusually high for the genre. Post-viewing surveys indicated the film's psychological suspense kept viewers engaged without relying on conventional jump-scare mechanics.",
+    "answer": "The Abandoned had the highest horror completion rate in 2025 at 89%, driven by psychological suspense rather than conventional jump scares, keeping audiences engaged throughout."
+  }
+]
