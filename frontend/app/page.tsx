@@ -23,7 +23,8 @@ export default function Page() {
     year: "All",
   });
   const { session, logout } = useSession();
-  const { history, addHistoryItem, clearHistory, refetchHistory } = useQueryHistory();
+  const { history, addHistoryItem, clearHistory, refetchHistory } =
+    useQueryHistory();
   const lastUserQueryRef = useRef("");
   const prevStatusRef = useRef("");
 
@@ -64,7 +65,9 @@ export default function Page() {
       if (lastAssistant && lastUserQueryRef.current) {
         // ai@6: tool parts have type "tool-{toolName}", text parts have type "text"
         const toolsUsed = (lastAssistant.parts ?? [])
-          .filter((p) => (p.type as string).startsWith("tool-") && "toolName" in p)
+          .filter(
+            (p) => (p.type as string).startsWith("tool-") && "toolName" in p
+          )
           .map((p) => (p as { toolName: string }).toolName);
         const answerText = (lastAssistant.parts ?? [])
           .filter((p) => p.type === "text")

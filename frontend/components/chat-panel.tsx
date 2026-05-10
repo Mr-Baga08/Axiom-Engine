@@ -72,25 +72,32 @@ export default function ChatPanel({
         {isLoading && (
           <div className="flex items-center gap-2 font-mono text-xs text-blueprint/40">
             <span className="animate-pulse">●</span>
-            <span className="animate-pulse" style={{ animationDelay: "0.2s" }}>●</span>
-            <span className="animate-pulse" style={{ animationDelay: "0.4s" }}>●</span>
+            <span className="animate-pulse" style={{ animationDelay: "0.2s" }}>
+              ●
+            </span>
+            <span className="animate-pulse" style={{ animationDelay: "0.4s" }}>
+              ●
+            </span>
             <span className="ml-1">AXIOM ENGINE THINKING…</span>
           </div>
         )}
 
         {messages.map((m) => {
-          const text =
-            (m.parts ?? [])
-              .filter((p) => p.type === "text")
-              .map((p) => (p as { type: string; text?: string }).text ?? "")
-              .join("");
+          const text = (m.parts ?? [])
+            .filter((p) => p.type === "text")
+            .map((p) => (p as { type: string; text?: string }).text ?? "")
+            .join("");
 
           // ai@6: tool parts have type "tool-{toolName}" (e.g. "tool-query_sql")
           const toolCallParts: ToolCallPart[] =
             m.role === "user"
               ? []
               : (m.parts ?? [])
-                  .filter((p) => (p.type as string).startsWith("tool-") && "toolCallId" in p)
+                  .filter(
+                    (p) =>
+                      (p.type as string).startsWith("tool-") &&
+                      "toolCallId" in p
+                  )
                   .map((p) => p as unknown as ToolCallPart);
 
           const toolEvents: SSEToolCallEvent[] = toolCallParts

@@ -38,7 +38,9 @@ export default function InsightsPanel({
 
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
-    if (!file) return;
+    if (!file) {
+      return;
+    }
 
     setUploadState("uploading");
     setUploadMsg(`Uploading ${file.name}…`);
@@ -47,16 +49,26 @@ export default function InsightsPanel({
     form.append("file", file);
 
     try {
-      const res = await fetch("/api/ingest/pdf", { method: "POST", body: form });
+      const res = await fetch("/api/ingest/pdf", {
+        method: "POST",
+        body: form,
+      });
       if (res.ok) {
-        const data = (await res.json()) as { chunks_indexed: number; filename: string };
+        const data = (await res.json()) as {
+          chunks_indexed: number;
+          filename: string;
+        };
         setUploadState("success");
-        setUploadMsg(`✓ ${data.filename} — ${data.chunks_indexed} chunks indexed`);
+        setUploadMsg(
+          `✓ ${data.filename} — ${data.chunks_indexed} chunks indexed`
+        );
       } else if (res.status === 401 || res.status === 403) {
         setUploadState("error");
         setUploadMsg("Executive role required to upload documents");
       } else {
-        const err = (await res.json().catch(() => ({ error: "Unknown error" }))) as { error: string };
+        const err = (await res
+          .json()
+          .catch(() => ({ error: "Unknown error" }))) as { error: string };
         setUploadState("error");
         setUploadMsg(`Upload failed: ${err.error}`);
       }
@@ -65,7 +77,9 @@ export default function InsightsPanel({
       setUploadMsg("Network error — could not reach backend");
     } finally {
       // Reset file input so the same file can be re-uploaded
-      if (fileRef.current) fileRef.current.value = "";
+      if (fileRef.current) {
+        fileRef.current.value = "";
+      }
       setTimeout(() => {
         setUploadState("idle");
         setUploadMsg("");
@@ -73,7 +87,9 @@ export default function InsightsPanel({
     }
   }
 
-  if (!open) return null;
+  if (!open) {
+    return null;
+  }
 
   return (
     <aside className="fixed inset-0 z-40 flex w-full flex-col border-l border-dashed border-[var(--blueprint-border)] bg-white/90 backdrop-blur-sm lg:static lg:inset-auto lg:z-auto lg:w-96 lg:bg-white lg:backdrop-blur-none">
@@ -106,7 +122,9 @@ export default function InsightsPanel({
               <p className="text-center font-mono text-xs leading-relaxed text-blueprint/30">
                 NO CHART DATA
                 <br />
-                <span className="text-blueprint/20">awaiting render_chart signal</span>
+                <span className="text-blueprint/20">
+                  awaiting render_chart signal
+                </span>
               </p>
             </div>
           )}

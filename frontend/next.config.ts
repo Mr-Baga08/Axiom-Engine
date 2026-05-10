@@ -21,7 +21,7 @@ const nextConfig: NextConfig = {
   env: {
     NEXT_PUBLIC_BASE_PATH: basePath,
   },
-  output: "standalone",   // produces .next/standalone — used by the production Dockerfile
+  output: "standalone", // produces .next/standalone — used by the production Dockerfile
   cacheComponents: true,
   devIndicators: false,
   poweredByHeader: false,

@@ -13,24 +13,28 @@ import { useCallback, useEffect, useState } from "react";
 import type { HistoryItem } from "@/types/app-types";
 
 const STORAGE_KEY = "queryHistory";
-const MAX_ITEMS   = 50;
+const MAX_ITEMS = 50;
 
 async function fetchBackendHistory(): Promise<HistoryItem[]> {
   try {
     const res = await fetch("/api/history", { credentials: "include" });
-    if (!res.ok) return [];
-    const data = (await res.json()) as { history: Array<{
-      query: string;
-      answer_preview: string;
-      tools_used: string[];
-      timestamp: number;
-    }> };
+    if (!res.ok) {
+      return [];
+    }
+    const data = (await res.json()) as {
+      history: Array<{
+        query: string;
+        answer_preview: string;
+        tools_used: string[];
+        timestamp: number;
+      }>;
+    };
     return (data.history ?? []).map((e, i) => ({
-      id:            `backend-${e.timestamp}-${i}`,
-      query:         e.query,
+      id: `backend-${e.timestamp}-${i}`,
+      query: e.query,
       answerPreview: e.answer_preview,
-      toolsUsed:     e.tools_used,
-      timestamp:     e.timestamp,
+      toolsUsed: e.tools_used,
+      timestamp: e.timestamp,
     }));
   } catch {
     return [];
@@ -52,7 +56,9 @@ export function useQueryHistory() {
     let local: HistoryItem[] = [];
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) local = JSON.parse(stored) as HistoryItem[];
+      if (stored) {
+        local = JSON.parse(stored) as HistoryItem[];
+      }
     } catch {
       // localStorage unavailable
     }
@@ -80,13 +86,17 @@ export function useQueryHistory() {
   }, []);
 
   // Initial load
-  useEffect(() => { loadHistory(); }, [loadHistory]);
+  useEffect(() => {
+    loadHistory();
+  }, [loadHistory]);
 
   // Re-fetch when the tab becomes visible — catches the case where the user
   // logged in on another page and navigated back here with the cookie already set.
   useEffect(() => {
     const onVisible = () => {
-      if (document.visibilityState === "visible") loadHistory();
+      if (document.visibilityState === "visible") {
+        loadHistory();
+      }
     };
     document.addEventListener("visibilitychange", onVisible);
     return () => document.removeEventListener("visibilitychange", onVisible);
@@ -94,7 +104,10 @@ export function useQueryHistory() {
 
   const addHistoryItem = useCallback((item: HistoryItem) => {
     setHistory((prev) => {
-      const next = [item, ...prev.filter((h) => h.id !== item.id)].slice(0, MAX_ITEMS);
+      const next = [item, ...prev.filter((h) => h.id !== item.id)].slice(
+        0,
+        MAX_ITEMS
+      );
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
       } catch {
@@ -106,7 +119,11 @@ export function useQueryHistory() {
 
   const clearHistory = useCallback(() => {
     setHistory([]);
-    try { localStorage.removeItem(STORAGE_KEY); } catch { /* unavailable */ }
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch {
+      /* unavailable */
+    }
     deleteBackendHistory();
   }, []);
 

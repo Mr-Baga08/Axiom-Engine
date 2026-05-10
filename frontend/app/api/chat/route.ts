@@ -7,13 +7,10 @@
 // Primary path  : Go SSE gateway (:8080/stream) → Python /internal/query
 // Fallback path : Python /api/chat (JSON response)
 
-import {
-  createUIMessageStream,
-  createUIMessageStreamResponse,
-} from "ai";
+import { createUIMessageStream, createUIMessageStreamResponse } from "ai";
 
 const BACKEND_URL = process.env.BACKEND_URL ?? "http://localhost:8000";
-const GO_SSE_URL  = process.env.GO_SSE_URL  ?? "http://localhost:8080";
+const GO_SSE_URL = process.env.GO_SSE_URL ?? "http://localhost:8080";
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
@@ -41,9 +38,16 @@ function extractMessage(payload: {
 
 // ── Shared response builder ────────────────────────────────────────────────
 
-interface ToolEntry { tool: string; args: unknown; output?: unknown }
+interface ToolEntry {
+  args: unknown;
+  output?: unknown;
+  tool: string;
+}
 
-function buildUIMessageStreamResponse(toolCalls: ToolEntry[], answer: string): Response {
+function buildUIMessageStreamResponse(
+  toolCalls: ToolEntry[],
+  answer: string
+): Response {
   const stream = createUIMessageStream({
     execute: ({ writer }) => {
       // Emit each tool call with its input and output
@@ -54,9 +58,18 @@ function buildUIMessageStreamResponse(toolCalls: ToolEntry[], answer: string): R
       //   finish-step          : {}
       toolCalls.forEach((tc, i) => {
         const tcId = `tc-${i}-${tc.tool}`;
-        writer.write({ type: "tool-input-available", toolCallId: tcId, toolName: tc.tool, input: tc.args ?? {} });
+        writer.write({
+          type: "tool-input-available",
+          toolCallId: tcId,
+          toolName: tc.tool,
+          input: tc.args ?? {},
+        });
         if (tc.output !== undefined) {
-          writer.write({ type: "tool-output-available", toolCallId: tcId, output: tc.output });
+          writer.write({
+            type: "tool-output-available",
+            toolCallId: tcId,
+            output: tc.output,
+          });
         }
       });
 
@@ -66,7 +79,7 @@ function buildUIMessageStreamResponse(toolCalls: ToolEntry[], answer: string): R
       if (answer) {
         writer.write({ type: "text-start", id: "answer" });
         writer.write({ type: "text-delta", id: "answer", delta: answer });
-        writer.write({ type: "text-end",   id: "answer" });
+        writer.write({ type: "text-end", id: "answer" });
       }
 
       // Finish — commits the message into messages[]
@@ -79,7 +92,10 @@ function buildUIMessageStreamResponse(toolCalls: ToolEntry[], answer: string): R
 
 // ── Primary: Go SSE gateway ────────────────────────────────────────────────
 
-async function callViaGo(message: string, apiToken: string | undefined): Promise<Response> {
+async function callViaGo(
+  message: string,
+  apiToken: string | undefined
+): Promise<Response> {
   const goRes = await fetch(`${GO_SSE_URL}/stream`, {
     method: "POST",
     headers: {
@@ -89,7 +105,9 @@ async function callViaGo(message: string, apiToken: string | undefined): Promise
     body: JSON.stringify({ message }),
   });
 
-  if (!goRes.ok) throw new Error(`Go gateway ${goRes.status}`);
+  if (!goRes.ok) {
+    throw new Error(`Go gateway ${goRes.status}`);
+  }
 
   const raw = await goRes.text();
 
@@ -97,9 +115,13 @@ async function callViaGo(message: string, apiToken: string | undefined): Promise
   let answer = "";
 
   for (const line of raw.split("\n")) {
-    if (!line.startsWith("data: ")) continue;
+    if (!line.startsWith("data: ")) {
+      continue;
+    }
     const payload = line.slice(6).trim();
-    if (!payload || payload === "{}" || payload === "[DONE]") continue;
+    if (!payload || payload === "{}" || payload === "[DONE]") {
+      continue;
+    }
 
     try {
       const evt = JSON.parse(payload) as Record<string, unknown>;
@@ -110,18 +132,24 @@ async function callViaGo(message: string, apiToken: string | undefined): Promise
         answer += (evt.content as string) ?? "";
       } else if (evt.type === "done") {
         answer = (evt.answer as string) ?? answer;
-        const trace = evt.tool_trace as Array<{ tool: string; input: unknown; output: string }> | undefined;
+        const trace = evt.tool_trace as
+          | Array<{ tool: string; input: unknown; output: string }>
+          | undefined;
         if (trace?.length) {
           toolCalls.length = 0;
           for (const t of trace) {
             let output: unknown = t.output;
-            try { output = JSON.parse(t.output); } catch { /* keep string */ }
+            try {
+              output = JSON.parse(t.output);
+            } catch {
+              /* keep string */
+            }
             toolCalls.push({ tool: t.tool, args: t.input, output });
           }
         }
       }
     } catch {
-      continue;
+      /* malformed JSON line — skip */
     }
   }
 
@@ -130,7 +158,10 @@ async function callViaGo(message: string, apiToken: string | undefined): Promise
 
 // ── Fallback: Python JSON endpoint ─────────────────────────────────────────
 
-async function callViaPython(message: string, apiToken: string | undefined): Promise<Response> {
+async function callViaPython(
+  message: string,
+  apiToken: string | undefined
+): Promise<Response> {
   const res = await fetch(`${BACKEND_URL}/api/chat`, {
     method: "POST",
     headers: {
@@ -140,7 +171,11 @@ async function callViaPython(message: string, apiToken: string | undefined): Pro
     body: JSON.stringify({ message }),
   });
 
-  if (!res.ok) return new Response(`Backend error ${res.status}`, { status: res.status === 401 ? 401 : 502 });
+  if (!res.ok) {
+    return new Response(`Backend error ${res.status}`, {
+      status: res.status === 401 ? 401 : 502,
+    });
+  }
 
   const data = (await res.json()) as {
     answer: string;
@@ -149,7 +184,11 @@ async function callViaPython(message: string, apiToken: string | undefined): Pro
 
   const toolCalls: ToolEntry[] = (data.tool_trace ?? []).map((t) => {
     let output: unknown = t.output;
-    try { output = JSON.parse(t.output); } catch { /* keep string */ }
+    try {
+      output = JSON.parse(t.output);
+    } catch {
+      /* keep string */
+    }
     return { tool: t.tool, args: t.input, output };
   });
 
@@ -160,11 +199,16 @@ async function callViaPython(message: string, apiToken: string | undefined): Pro
 
 export async function POST(req: Request) {
   const payload = (await req.json().catch(() => ({ messages: [] }))) as {
-    messages: Array<{ content?: string; parts?: Array<{ type: string; text?: string }> }>;
+    messages: Array<{
+      content?: string;
+      parts?: Array<{ type: string; text?: string }>;
+    }>;
   };
 
   const messageText = extractMessage(payload);
-  if (!messageText.trim()) return new Response("empty message", { status: 400 });
+  if (!messageText.trim()) {
+    return new Response("empty message", { status: 400 });
+  }
 
   const apiToken = await getApiToken();
 
