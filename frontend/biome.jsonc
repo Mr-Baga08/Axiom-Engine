@@ -7,8 +7,7 @@
   ],
   "vcs": {
     "clientKind": "git",
-    "useIgnoreFile": true,
-    "root": ".."
+    "useIgnoreFile": false
   },
   "formatter": {
     "indentStyle": "space",
