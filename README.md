@@ -1,3 +1,8 @@
+
+
+
+https://github.com/user-attachments/assets/746f139c-aa71-414c-b0a8-9da397e0eac8
+
 # Axiom Engine
 
 An AI analytics assistant for the entertainment industry. Users ask questions in natural language; the system queries a structured database, retrieves relevant documents, runs sandboxed computations, and streams a sourced answer back through a Go SSE gateway.
