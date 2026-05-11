@@ -70,7 +70,7 @@ Claude / Anthropic key is optional; set `LLM_PROVIDER=anthropic` and provide `AN
 ## Quick Start
 
 ```bash
-git clone <repo> && cd axiom-engine
+git clone https://github.com/Mr-Baga08/Axiom-Engine.git && cd axiom-engine
 
 # 1. Set your Gemini API key (the only required step)
 cp .env.example .env
