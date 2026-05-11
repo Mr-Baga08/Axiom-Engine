@@ -25,28 +25,23 @@ from starlette.middleware.base import BaseHTTPMiddleware
 
 class RLSContextMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
-        if os.getenv("DB_BACKEND", "duckdb").lower() != "postgres":
-            return await call_next(request)
-
-        # The JWT middleware (from the security task) stores the decoded
-        # token on request.state.token after verification.
-        # If the token is not present (unauthenticated), skip the SET.
-        token = getattr(request.state, "token", None)
-        if token:
-            role = token.get("role", "viewer")
-            pool = request.app.state.db_pool  # asyncpg pool from lifespan
-
-            async with pool.acquire() as conn:
-                # set_config with is_local=true scopes the variable to this
-                # transaction only — it resets automatically after the query.
-                await conn.execute(
-                    "SELECT set_config('app.current_user_role', $1, true)",
-                    role,
-                )
-                # Store the connection on request.state so route handlers
-                # can reuse it instead of acquiring a second connection.
-                request.state.db_conn = conn
-                response = await call_next(request)
-                return response
-
+    if os.getenv("DB_BACKEND", "duckdb").lower() != "postgres":
         return await call_next(request)
+
+    token = getattr(request.state, "token", None)
+    if not token:
+        return await call_next(request)
+
+    role = token.get("role", "viewer")
+    pool = request.app.state.db_pool
+
+    async with pool.acquire() as conn:
+        await conn.execute(
+            "SELECT set_config('app.current_user_role', $1, true)", role,
+        )
+        # Store the *active* connection on request state
+        request.state.db_conn = conn
+        # call_next must happen INSIDE the async with block
+        response = await call_next(request)
+    # Connection is returned to pool AFTER the response is generated
+    return response
