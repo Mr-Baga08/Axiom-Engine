@@ -124,19 +124,25 @@ CREDENTIALS_EXCEPTION = HTTPException(
 def verify_token(
     credentials: HTTPAuthorizationCredentials = Depends(_bearer),
 ) -> dict[str, Any]:
-    """
-    FastAPI dependency. Decodes and validates the Bearer token.
-
-    - Raises 401 if the token is missing, expired, or invalid.
-    - Raises 401 if the token type is 'refresh' (refresh tokens must not be
-      used to call protected API endpoints — only the /auth/refresh route
-      accepts them).
-
-    Returns the decoded payload dict on success.
-    """
     token = credentials.credentials
     try:
-        payload = jwt.decode(token, _verify_key(), algorithms=[ALGORITHM])
+        # NEVER trust the token header's "alg" field.
+        # For RS256: verify with the public key, force RS256 only.
+        # For HS256: verify with the secret, force HS256 only.
+        if ALGORITHM == "RS256":
+            payload = jwt.decode(
+                token,
+                _load_key("JWT_PUBLIC_KEY_PATH"),
+                algorithms=["RS256"],
+                options={"verify_aud": False},
+            )
+        else:
+            payload = jwt.decode(
+                token,
+                os.environ["JWT_SECRET"],
+                algorithms=["HS256"],
+                options={"verify_aud": False},
+            )
     except JWTError:
         raise CREDENTIALS_EXCEPTION
     if payload.get("type") != "access":
