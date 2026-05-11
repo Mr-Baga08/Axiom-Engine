@@ -208,49 +208,88 @@ async def run_agent(
         # ── end_turn: extract final answer ────────────────────────────────
         if response.stop_reason == "end_turn":
             final_answer = response.text
-            log.info("agent_end_turn", round=round_num + 1)
             break
 
-        # ── tool_use: dispatch tools ──────────────────────────────────────
+        # ── tool_use: dispatch allowed tools ──────────────────────────────
         if response.stop_reason == "tool_use":
             tool_results = []
-
             for tc in response.tool_calls:
+                tool_name = tc.name
+                tool_input = tc.input or {}
+                tool_id = tc.id
+
                 # RBAC check
-                if tc.tool_name not in allowed_tools:
-                    log.warning("tool_rbac_denied", tool=tc.tool_name, role=user_role)
+                if tool_name not in allowed_tools:
+                    log.warning("rbac_blocked_tool", tool=tool_name, user_role=user_role)
                     tool_results.append({
-                        "id":      tc.tool_id,
-                        "content": f"Access denied: role '{user_role}' cannot use '{tc.tool_name}'",
+                        "tool_use_id": tool_id,
+                        "content": f"Permission denied for tool '{tool_name}'.",
                     })
                     continue
 
-                # Dispatch
-                result_data, result_sources = await _dispatch_tool(
-                    tool_name=tc.tool_name,
-                    tool_input=tc.tool_input,
-                    db=db,
-                    schema=schema,
-                    examples=examples,
-                    user_role=user_role,
-                    chunks_accumulator=retrieved_chunks,
-                )
+                log.info("tool_dispatch", tool=tool_name, round=round_num + 1)
+                try:
+                    result_data, new_sources = await _dispatch_tool(
+                        tool_name=tool_name,
+                        tool_input=tool_input,
+                        db=db,
+                        schema=schema,
+                        examples=examples,
+                        user_role=user_role,
+                        chunks_accumulator=retrieved_chunks,
+                    )
+                    sources.extend(new_sources)
 
-                sources.extend(result_sources)
-                tool_trace.append({
-                    "round":  round_num + 1,
-                    "tool":   tc.tool_name,
-                    "input":  {k: str(v)[:200] for k, v in tc.tool_input.items()},
-                    "output": json.dumps(result_data, default=str),
-                })
+                    # Record the call in the trace
+                    tool_trace.append({
+                        "tool": tool_name,
+                        "input": tool_input,
+                        "result": result_data if isinstance(result_data, dict) else str(result_data)[:200],
+                    })
+                except Exception as exc:
+                    log.error("tool_dispatch_error", tool=tool_name, error=str(exc))
+                    result_data = {"error": str(exc)}
+                    tool_trace.append({
+                        "tool": tool_name,
+                        "input": tool_input,
+                        "error": str(exc),
+                    })
 
+                # Format result for LLM's tool result message
+                # Ensure it's a JSON string or the object itself – depends on your LLM client.
+                # The client likely expects: {"tool_use_id": ..., "content": json string}
+                content = json.dumps(result_data, default=str)
                 tool_results.append({
-                    "id":      tc.tool_id,
-                    "content": json.dumps(result_data, default=str),
+                    "tool_use_id": tool_id,
+                    "content": content,
                 })
 
+            # Send all tool results back to the LLM
             llm.add_tool_results(tool_results)
 
+            # If this was the LAST round and we executed tools, ask for final synthesis
+            if round_num == MAX_ROUNDS - 1:
+                # Force one more completion to get the final answer
+                response = llm.complete()
+                cost = record_token_cost(
+                    model=llm.model_name,
+                    input_tokens=response.input_tokens,
+                    output_tokens=response.output_tokens,
+                )
+                total_cost += cost
+                final_answer = response.text or "I was unable to complete the analysis within the available rounds."
+                break
+            continue
+
+        # ── Any other stop reason (max_tokens, stop_sequence, etc.) ────────
+        if response.text:
+            final_answer = response.text
+        else:
+            final_answer = (
+                f"I could not complete the analysis (reason: {response.stop_reason}). "
+                "Please try rephrasing your question."
+            )
+        break
     # ── Post-answer: Phoenix RAG eval with final answer for faithfulness ──
     if retrieved_chunks and final_answer:
         from observability.phoenix_eval import log_rag_evaluation
